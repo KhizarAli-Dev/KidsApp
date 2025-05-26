@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
+  AccessibilityInfo,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "react-native";
@@ -18,7 +19,7 @@ const urduLetters = [
   "ا", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ",
   "د", "ڈ", "ذ", "ر", "ڑ", "ز", "ژ", "س", "ش", "ص",
   "ض", "ط", "ظ", "ع", "غ", "ف", "ق", "ک", "گ", "ل",
-  "م", "ن", "و", "ہ", "ء", "ی", "ے", 
+  "م", "ن", "و", "ہ", "ء", "ی", "ے",
 ];
 
 const colors = [
@@ -27,32 +28,33 @@ const colors = [
 ];
 
 const UrduPage = () => {
-  const coloredLetters = useMemo(() => {
-    return urduLetters.map((letter) => ({
+  // Memoize letters with assigned background colors once
+  const coloredLetters = useMemo(() => 
+    urduLetters.map(letter => ({
       letter,
       bgColor: colors[Math.floor(Math.random() * colors.length)],
-    }));
+    })),
+  []);
+
+  // Speak Urdu letter with custom pronunciation for some letters
+  const speakUrdu = useCallback((letter) => {
+    Speech.stop();
+
+    let toSpeak = letter;
+    if (letter === "ق") toSpeak = "قاف";
+    else if (letter === "ژ") toSpeak = "زے";
+
+    Speech.speak(toSpeak, {
+      language: "ur-PK",
+      pitch: 1,
+      rate: 0.6,
+    });
+
+    // Announce for screen readers
+    AccessibilityInfo.announceForAccessibility(`آواز: ${toSpeak}`);
   }, []);
 
-const speakUrdu = (letter) => {
-  Speech.stop();
-
-  // Handle special pronunciation cases
-  let toSpeak = letter;
-  if (letter === "ق") {
-    toSpeak = "قاف"; // Qaaf — full form
-  } else if (letter === "ژ") {
-    toSpeak = "زے"; // Zhe — commonly pronounced like "zhe"
-  }
-
-  Speech.speak(toSpeak, {
-    language: "ur-PK",
-    pitch: 1,
-    rate: 0.6,
-  });
-};
-
-
+  // Stop speech on screen blur/unmount
   useFocusEffect(
     useCallback(() => {
       return () => {
@@ -60,6 +62,19 @@ const speakUrdu = (letter) => {
       };
     }, [])
   );
+
+  // Render single Urdu letter card
+  const renderItem = useCallback(({ item }) => (
+    <TouchableOpacity
+      style={[styles.letterCard, { backgroundColor: item.bgColor }]}
+      onPress={() => speakUrdu(item.letter)}
+      activeOpacity={0.7}
+      accessibilityLabel={`اردو حرف ${item.letter}`}
+      accessibilityRole="button"
+    >
+      <Text style={styles.letterText}>{item.letter}</Text>
+    </TouchableOpacity>
+  ), [speakUrdu]);
 
   return (
     <ImageBackground
@@ -74,20 +89,14 @@ const speakUrdu = (letter) => {
         <FlatList
           data={coloredLetters}
           numColumns={4}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item.letter}
           contentContainerStyle={styles.listContainer}
-          // inverted // reverse the list rendering order (RTL)
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={[styles.letterCard, { backgroundColor: item.bgColor }]}
-              onPress={() => speakUrdu(item.letter)}
-              activeOpacity={0.7}
-            >
-              <Text style={styles.letterText}>{item.letter}</Text>
-            </TouchableOpacity>
-          )}
+          renderItem={renderItem}
           columnWrapperStyle={{ flexDirection: "row-reverse" }}
           showsVerticalScrollIndicator={false}
+          initialNumToRender={16}
+          maxToRenderPerBatch={16}
+          windowSize={10}
         />
       </View>
     </ImageBackground>
@@ -95,13 +104,8 @@ const speakUrdu = (letter) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    paddingHorizontal: 12,
-  },
+  container: { flex: 1 },
+  overlay: { flex: 1, paddingHorizontal: 12 },
   heading: {
     fontSize: 32,
     fontWeight: "bold",
@@ -111,11 +115,9 @@ const styles = StyleSheet.create({
     textShadowColor: "#000000aa",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 6,
-    fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif", // Urdu friendly font fallback
+    fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
-  listContainer: {
-    paddingBottom: 30,
-  },
+  listContainer: { paddingBottom: 30 },
   letterCard: {
     width: width / 4 - 20,
     height: width / 4 - 20,
@@ -133,7 +135,6 @@ const styles = StyleSheet.create({
   letterText: {
     fontSize: 40,
     fontWeight: "700",
-    
     color: "#1a1a1a",
     textShadowColor: "#ffffffbb",
     textShadowOffset: { width: 0.5, height: 0.5 },

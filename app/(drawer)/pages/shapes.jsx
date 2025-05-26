@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, ImageBackground } from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  FlatList,
+  ImageBackground,
+} from 'react-native';
 import * as Speech from 'expo-speech';
 import { Ionicons } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const shapes = [
+const SHAPES = [
   { name: 'Circle', icon: 'circle', color: '#FF5733' },
   { name: 'Square', icon: 'square', color: '#33FF57' },
   { name: 'Triangle', icon: 'triangle', color: '#3357FF' },
@@ -28,11 +35,11 @@ const ShapesScreen = () => {
     Speech.speak(shape.name, {
       rate: 0.2,
       pitch: 1.1,
-      language: 'en-US'
+      language: 'en-US',
     });
   };
 
-  const renderItem = ({ item }) => (
+  const renderItem = useCallback(({ item }) => (
     <TouchableOpacity
       style={[
         styles.shapeCard,
@@ -42,18 +49,17 @@ const ShapesScreen = () => {
         },
       ]}
       onPress={() => speakShape(item)}
-      activeOpacity={0.7}
+      activeOpacity={0.75}
     >
       <MaterialCommunityIcons name={item.icon} size={60} color="#FFF" />
       <Text style={styles.shapeName}>{item.name}</Text>
-      <Ionicons
-        name="volume-high"
-        size={24}
-        color="#FFF"
-        style={styles.icon}
-      />
+      <Ionicons name="volume-high" size={24} color="#FFF" style={styles.icon} />
     </TouchableOpacity>
-  );
+  ), [activeShape]);
+
+  useEffect(() => {
+    return () => Speech.stop(); // cleanup speech on unmount
+  }, []);
 
   return (
     <ImageBackground
@@ -67,7 +73,7 @@ const ShapesScreen = () => {
       </View>
 
       <FlatList
-        data={shapes}
+        data={SHAPES}
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
         numColumns={2}
@@ -78,6 +84,10 @@ const ShapesScreen = () => {
   );
 };
 
+export default ShapesScreen;
+
+// ---------------------- STYLES ---------------------- //
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -86,12 +96,12 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
+    marginTop: 20,
     marginBottom: 8,
     color: '#FFF',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
-    marginTop: 20,
   },
   subtitle: {
     fontSize: 18,
@@ -105,11 +115,13 @@ const styles = StyleSheet.create({
   grid: {
     justifyContent: 'center',
     paddingHorizontal: 10,
+    paddingBottom: 30,
   },
   shapeCard: {
     flex: 1,
     margin: 10,
     height: 150,
+    maxWidth: '45%',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -121,7 +133,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.3)',
     position: 'relative',
-    maxWidth: '45%', // ensures 2 cards per row nicely spaced
   },
   shapeName: {
     fontSize: 18,
@@ -141,5 +152,3 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 });
-
-export default ShapesScreen;

@@ -91,20 +91,22 @@ const duas = [
 const Islamiat = () => {
   const [activeTab, setActiveTab] = useState("kalmas");
 
-  const speak = (arabic, urdu) => {
-    Speech.speak(arabic, {
-      rate: 0.5,
-      pitch: 1,
-      language: "ar-SA",
-      onDone: () => {
-        Speech.speak(urdu, {
-          rate: 0.6,
-          pitch: 1,
-          language: "ur-PK",
-        });
-      },
-    });
-  };
+const speak = (arabic, urdu) => {
+  Speech.stop(); // Stop any ongoing speech before starting a new one
+  Speech.speak(arabic, {
+    rate: 0.5,
+    pitch: 1,
+    language: "ar-SA",
+    onDone: () => {
+      Speech.speak(urdu, {
+        rate: 0.6,
+        pitch: 1,
+        language: "ur-PK",
+      });
+    },
+  });
+};
+
 
   const dataToRender =
     activeTab === "kalmas" ? kalmas : activeTab === "surahs" ? surahs : duas;

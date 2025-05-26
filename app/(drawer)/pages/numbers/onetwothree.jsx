@@ -14,32 +14,36 @@ import { Ionicons } from "@expo/vector-icons";
 const { width } = Dimensions.get("window");
 const CARD_WIDTH = width / 2 - 30;
 
-const OneTwoThree = () => {
-  const numbers = [
-    { word: "one", letters: ["o", "n", "e"], color: "#FF5733" },
-    { word: "two", letters: ["t", "w", "o"], color: "#33FF57" },
-    { word: "three", letters: ["t", "h", "r", "e", "e"], color: "#3357FF" },
-    { word: "four", letters: ["f", "o", "u", "r"], color: "#F333FF" },
-    { word: "five", letters: ["f", "i", "v", "e"], color: "#33FFF5" },
-    { word: "six", letters: ["s", "i", "x"], color: "#FF33A8" },
-    { word: "seven", letters: ["s", "e", "v", "e", "n"], color: "#A833FF" },
-    { word: "eight", letters: ["e", "i", "g", "h", "t"], color: "#33FF8C" },
-    { word: "nine", letters: ["n", "i", "n", "e"], color: "#FF8C33" },
-    { word: "ten", letters: ["t", "e", "n"], color: "#33A8FF" },
-    { word: "eleven", letters: ["e", "l", "e", "v", "e", "n"], color: "#FF33B5" },
-    { word: "twelve", letters: ["t", "w", "e", "l", "v", "e"], color: "#FF5733" },
-    { word: "thirteen", letters: ["t", "h", "i", "r", "t", "e", "e", "n"], color: "#33FF57" },
-    { word: "fourteen", letters: ["f", "o", "u", "r", "t", "e", "e", "n"], color: "#3357FF" },
-    { word: "fifteen", letters: ["f", "i", "f", "t", "e", "e", "n"], color: "#F333FF" },
-    { word: "sixteen", letters: ["s", "i", "x", "t", "e", "e", "n"], color: "#33FFF5" },
-    { word: "seventeen", letters: ["s", "e", "v", "e", "n", "t", "e", "e", "n"], color: "#FF33A8" },
-    { word: "eighteen", letters: ["e", "i", "g", "h", "t", "e", "e", "n"], color: "#A833FF" },
-    { word: "nineteen", letters: ["n", "i", "n", "e", "t", "e", "e", "n"], color: "#33FF8C" },
-    { word: "twenty", letters: ["t", "w", "e", "n", "t", "y"], color: "#FF8C33" },
-  ];
+const NUMBERS = [
+  { word: "one", letters: ["o", "n", "e"], color: "#FF5733" },
+  { word: "two", letters: ["t", "w", "o"], color: "#33FF57" },
+  { word: "three", letters: ["t", "h", "r", "e", "e"], color: "#3357FF" },
+  { word: "four", letters: ["f", "o", "u", "r"], color: "#F333FF" },
+  { word: "five", letters: ["f", "i", "v", "e"], color: "#33FFF5" },
+  { word: "six", letters: ["s", "i", "x"], color: "#FF33A8" },
+  { word: "seven", letters: ["s", "e", "v", "e", "n"], color: "#A833FF" },
+  { word: "eight", letters: ["e", "i", "g", "h", "t"], color: "#33FF8C" },
+  { word: "nine", letters: ["n", "i", "n", "e"], color: "#FF8C33" },
+  { word: "ten", letters: ["t", "e", "n"], color: "#33A8FF" },
+  { word: "eleven", letters: ["e", "l", "e", "v", "e", "n"], color: "#FF33B5" },
+  { word: "twelve", letters: ["t", "w", "e", "l", "v", "e"], color: "#FF5733" },
+  { word: "thirteen", letters: ["t", "h", "i", "r", "t", "e", "e", "n"], color: "#33FF57" },
+  { word: "fourteen", letters: ["f", "o", "u", "r", "t", "e", "e", "n"], color: "#3357FF" },
+  { word: "fifteen", letters: ["f", "i", "f", "t", "e", "e", "n"], color: "#F333FF" },
+  { word: "sixteen", letters: ["s", "i", "x", "t", "e", "e", "n"], color: "#33FFF5" },
+  { word: "seventeen", letters: ["s", "e", "v", "e", "n", "t", "e", "e", "n"], color: "#FF33A8" },
+  { word: "eighteen", letters: ["e", "i", "g", "h", "t", "e", "e", "n"], color: "#A833FF" },
+  { word: "nineteen", letters: ["n", "i", "n", "e", "t", "e", "e", "n"], color: "#33FF8C" },
+  { word: "twenty", letters: ["t", "w", "e", "n", "t", "y"], color: "#FF8C33" },
+];
 
+const OneTwoThree = () => {
   const [activeNumber, setActiveNumber] = useState(null);
   const [timeouts, setTimeouts] = useState([]);
+
+  useEffect(() => {
+    return () => clearAllTimeouts(); // Cleanup on unmount
+  }, []);
 
   const clearAllTimeouts = () => {
     timeouts.forEach(clearTimeout);
@@ -70,10 +74,6 @@ const OneTwoThree = () => {
     setTimeouts(newTimeouts);
   };
 
-  useEffect(() => {
-    return () => clearAllTimeouts(); // cleanup on unmount
-  }, []);
-
   const renderItem = ({ item }) => (
     <TouchableOpacity
       style={[
@@ -88,8 +88,8 @@ const OneTwoThree = () => {
     >
       <Text style={styles.numberWord}>{item.word}</Text>
       <View style={styles.lettersContainer}>
-        {item.letters.map((letter, i) => (
-          <Text key={i} style={styles.letter}>
+        {item.letters.map((letter, index) => (
+          <Text key={index} style={styles.letter}>
             {letter}
           </Text>
         ))}
@@ -106,13 +106,12 @@ const OneTwoThree = () => {
     >
       <Text style={styles.title}>Learn Numbers</Text>
       <Text style={styles.subtitle}>Tap to hear the spelling</Text>
-
       <FlatList
-        data={numbers}
+        data={NUMBERS}
         renderItem={renderItem}
         keyExtractor={(item) => item.word}
         numColumns={2}
-        contentContainerStyle={{ paddingBottom: 80, paddingHorizontal: 10 }}
+        contentContainerStyle={styles.listContent}
       />
     </ImageBackground>
   );
@@ -192,6 +191,10 @@ const styles = StyleSheet.create({
     textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  listContent: {
+    paddingBottom: 80,
+    paddingHorizontal: 10,
   },
 });
 

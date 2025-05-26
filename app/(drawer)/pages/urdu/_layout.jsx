@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router";
-import { MaterialIcons, Ionicons } from "@expo/vector-icons";
+import { MaterialIcons, Ionicons, FontAwesome } from "@expo/vector-icons";
 
 export default function UrduTabsLayout() {
   return (
@@ -7,22 +7,26 @@ export default function UrduTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#6C63FF",
-        tabBarLabelStyle: { fontSize: 14 },
+        tabBarLabelStyle: { fontSize: 14, fontWeight: "600" },
+        tabBarStyle: { paddingVertical: 6 },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "حروف",
-          tabBarIcon: () => null
-
+          title: "Letters",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialIcons name="text-fields" size={size} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="sentences"
         options={{
-          title: "جملے",
-          tabBarIcon: () => null
+          title: "Sentences",
+          tabBarIcon: ({ color, size }) => (
+            <FontAwesome name="child" size={size} color={color} />
+          ),
         }}
       />
     </Tabs>

@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Platform,
+  AccessibilityInfo,
 } from "react-native";
 import * as Speech from "expo-speech";
-import { Ionicons } from "@expo/vector-icons";
-import { ImageBackground } from "expo-image";
+import { ImageBackground } from "react-native";
 
 const urduSentences = [
   "میں اسکول جا رہا ہوں۔",
@@ -24,38 +25,45 @@ const urduSentences = [
 ];
 
 export default function SentencesPage() {
-  const speak = (text) => {
+  const speak = useCallback((text) => {
     Speech.stop();
-    Speech.speak(text, { language: "ur-PK", rate: 0.9 });
-  };
+    Speech.speak(text, { language: "ur-PK", rate: 0.6 });
 
-  const renderItem = ({ item, index }) => (
+    AccessibilityInfo.announceForAccessibility(`جملہ: ${text}`);
+  }, []);
+
+  const renderItem = useCallback(({ item, index }) => (
     <TouchableOpacity
       style={[
         styles.card,
         { backgroundColor: index % 2 === 0 ? "#BA68C8" : "#4FC3F7" },
       ]}
       onPress={() => speak(item)}
+      activeOpacity={0.7}
+      accessibilityRole="button"
+      accessibilityLabel={`اردو جملہ: ${item}`}
     >
       <Text style={styles.sentence}>{item}</Text>
-      <Ionicons name="volume-high" size={22} color="#fff" />
     </TouchableOpacity>
-  );
+  ), [speak]);
 
   return (
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
       blurRadius={2}
+      resizeMode="cover"
     >
       <Text style={styles.title}>اردو جملے سیکھیں</Text>
-      <Text style={styles.subtitle}>کسی بھی جملے پر ٹیپ کریں</Text>
-
       <FlatList
         data={urduSentences}
-        keyExtractor={(item, index) => index.toString()}
+        keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
         contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={7}
       />
     </ImageBackground>
   );
@@ -64,20 +72,17 @@ export default function SentencesPage() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 60,
   },
   title: {
     fontSize: 30,
     fontWeight: "bold",
     textAlign: "center",
-    color: "#6A1B9A",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 18,
-    textAlign: "center",
-    color: "#00796B",
-    marginBottom: 20,
+    color: "white",
+    paddingVertical: 10,
+    textShadowColor: "#000a",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 3,
+    fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
   scrollContent: {
     paddingHorizontal: 20,
@@ -88,7 +93,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     marginBottom: 15,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     elevation: 4,
     shadowColor: "#000",
@@ -100,5 +105,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#fff",
     fontWeight: "600",
+    textAlign: "center",
   },
 });

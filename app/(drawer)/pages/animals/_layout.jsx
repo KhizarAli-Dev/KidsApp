@@ -8,24 +8,23 @@ export default function NumberTabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: "#6C63FF",
         tabBarLabelStyle: { fontSize: 12 },
-        
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Numbers",
+          title: "Animals",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="numeric" size={size} color={color} />
+            <MaterialCommunityIcons name="cat" size={size} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="onetwothree"
+        name="birds"
         options={{
-          title: "OneTwoThree",
+          title: "Birds",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="text-fields" size={size} color={color} />
+            <MaterialCommunityIcons name="bird" size={size} color={color} />
           ),
         }}
       />

@@ -51,7 +51,7 @@ export default function LoginScreen() {
 
   return (
     <ImageBackground
-      source={require("../assets/images/loginbg2.jpg")}
+      source={require("../assets/images/bg/loginbg2.jpg")}
       style={styles.container}
     >
       <View style={styles.card}>

@@ -1,42 +1,58 @@
+import React, { useCallback, useMemo } from "react";
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
+import { useFocusEffect } from "@react-navigation/native";
+
+const { width } = Dimensions.get("window");
+const BOX_SIZE = width / 3 - 20;
 
 const Numbers = () => {
-  const numbers = Array.from({ length: 20 }, (_, i) => i + 1);
+  const numbers = useMemo(() => Array.from({ length: 20 }, (_, i) => i + 1), []);
 
-  const colors = [
-    "#FF5733", "#33FF57", "#3357FF", "#F333FF", "#33FFF5",
-    "#FF33A8", "#A833FF", "#33FF8C", "#FF8C33", "#33A8FF",
-    "#FF3361", "#61FF33", "#6133FF", "#FF33F5", "#33FFC1",
-    "#FFC133", "#C133FF", "#33FF61", "#FF6133", "#33C1FF",
-  ];
-
-  const numberWords = [
+  const numberWords = useMemo(() => [
     "One", "Two", "Three", "Four", "Five",
     "Six", "Seven", "Eight", "Nine", "Ten",
     "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
     "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
-  ];
+  ], []);
 
-  const speak = (number) => {
-    Speech.speak(numberWords[number - 1], {
+  const colors = useMemo(() => [
+    "#FF5733", "#33FF57", "#3357FF", "#F333FF", "#33FFF5",
+    "#FF33A8", "#A833FF", "#33FF8C", "#FF8C33", "#33A8FF",
+    "#FF3361", "#61FF33", "#6133FF", "#FF33F5", "#33FFC1",
+    "#FFC133", "#C133FF", "#33FF61", "#FF6133", "#33C1FF",
+  ], []);
+
+  const speak = useCallback((numberIndex) => {
+    Speech.stop();
+    Speech.speak(numberWords[numberIndex], {
       rate: 0.2,
       pitch: 1.1,
       language: "en-US",
     });
-  };
+  }, [numberWords]);
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        Speech.stop();
+      };
+    }, [])
+  );
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
-      onPress={() => speak(item)}
-      style={[styles.box, { backgroundColor: colors[index] }]}
+      onPress={() => speak(index)}
+      style={[styles.box, { backgroundColor: colors[index % colors.length] }]}
+      activeOpacity={0.8}
     >
       <Text style={styles.number}>{item}</Text>
       <Text style={styles.word}>{numberWords[index]}</Text>
@@ -49,8 +65,10 @@ const Numbers = () => {
       style={styles.container}
       blurRadius={2}
     >
-      <Text style={styles.title}>Numbers 1-20</Text>
-      <Text style={styles.subtitle}>Tap any number to hear it</Text>
+      <View style={styles.header}>
+        <Text style={styles.title}>Numbers 1–20</Text>
+        <Text style={styles.subtitle}>Tap any number to hear it</Text>
+      </View>
 
       <FlatList
         data={numbers}
@@ -58,6 +76,7 @@ const Numbers = () => {
         keyExtractor={(item) => item.toString()}
         numColumns={3}
         contentContainerStyle={styles.grid}
+        showsVerticalScrollIndicator={false}
       />
     </ImageBackground>
   );
@@ -66,26 +85,33 @@ const Numbers = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: 40,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    textAlign: "center",
     color: "white",
+    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
     color: "white",
+    marginTop: 5,
   },
   grid: {
     paddingHorizontal: 10,
+    paddingBottom: 30,
     alignItems: "center",
   },
   box: {
-    width: 100,
-    height: 100,
+    width: BOX_SIZE,
+    height: BOX_SIZE,
     margin: 8,
     borderRadius: 15,
     justifyContent: "center",
@@ -104,7 +130,7 @@ const styles = StyleSheet.create({
   word: {
     fontSize: 14,
     color: "white",
-    marginTop: 5,
+    marginTop: 4,
     textTransform: "uppercase",
   },
 });

@@ -1,7 +1,13 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import { Video } from "expo-av";
 import { ImageBackground } from "expo-image";
+
+// Reusable background color palette
+const CARD_COLORS = [
+  "#FFF8DC", "#FFEBEE", "#E1F5FE", "#E8F5E9", "#FFF3E0",
+  "#FCE4EC", "#F3E5F5", "#F9FBE7", "#E0F7FA", "#FFE0B2",
+];
 
 const poemsData = [
   {
@@ -16,19 +22,26 @@ const poemsData = [
   },
 ];
 
+// Utility function for card colors
+const getCardColor = (index) => CARD_COLORS[index % CARD_COLORS.length];
+
 const Poems = () => {
-  const renderItem = ({ item, index }) => (
+  // Render each poem card
+  const renderItem = useCallback(({ item, index }) => (
     <View style={[styles.card, { backgroundColor: getCardColor(index) }]}>
       <Text style={styles.title}>{item.title}</Text>
+
       <Video
         source={item.videoFile}
         style={styles.video}
         useNativeControls
         resizeMode="contain"
+        shouldPlay={false}
       />
+
       <Text style={styles.lyrics}>{item.lyrics}</Text>
     </View>
-  );
+  ), []);
 
   return (
     <ImageBackground
@@ -40,7 +53,7 @@ const Poems = () => {
         data={poemsData}
         renderItem={renderItem}
         keyExtractor={(_, index) => index.toString()}
-        contentContainerStyle={{ padding: 16, paddingBottom: 30 }}
+        contentContainerStyle={styles.listContent}
         ListHeaderComponent={
           <Text style={styles.heading}>📚 Fun Poems for Kids 🎶</Text>
         }
@@ -50,17 +63,16 @@ const Poems = () => {
   );
 };
 
-const getCardColor = (index) => {
-  const colors = [
-    "#FFF8DC", "#FFEBEE", "#E1F5FE", "#E8F5E9", "#FFF3E0",
-    "#FCE4EC", "#F3E5F5", "#F9FBE7", "#E0F7FA", "#FFE0B2",
-  ];
-  return colors[index % colors.length];
-};
+export default Poems;
 
+// Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 30,
   },
   heading: {
     fontSize: 30,
@@ -74,15 +86,15 @@ const styles = StyleSheet.create({
   },
   card: {
     width: "95%",
+    alignSelf: "center",
     marginVertical: 12,
     padding: 18,
     borderRadius: 25,
     elevation: 6,
-    shadowColor: "#888",
+    shadowColor: "#444",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.2,
     shadowRadius: 5,
-    alignSelf: "center",
   },
   title: {
     fontSize: 24,
@@ -106,5 +118,3 @@ const styles = StyleSheet.create({
     backgroundColor: "#000",
   },
 });
-
-export default Poems;

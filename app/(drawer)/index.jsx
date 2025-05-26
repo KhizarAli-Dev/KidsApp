@@ -11,90 +11,95 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
+// Constants
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+const CHECK_INTERVAL_MS = 10 * 60 * 1000;
+
+const learningCategories = [
+  {
+    name: "Alphabet",
+    icon: "alphabetical",
+    color: "#FF9E3B",
+    screen: "/pages/abc",
+  },
+  {
+    name: "Numbers",
+    icon: "numeric",
+    color: "#6C63FF",
+    screen: "/pages/numbers",
+  },
+  {
+    name: "Shapes",
+    icon: "shape-outline",
+    color: "#4CAF50",
+    screen: "/pages/shapes",
+  },
+  {
+    name: "Colors",
+    icon: "palette",
+    color: "#F06292",
+    screen: "/pages/colors",
+  },
+  {
+    name: "Animals",
+    icon: "cat",
+    color: "#9e0059",
+    screen: "/pages/animals",
+  },
+  {
+    name: "Poems",
+    icon: "book-open-page-variant",
+    color: "#FFCA28",
+    screen: "/pages/poems",
+  },
+  {
+    name: "GK",
+    icon: "book",
+    color: "#FF7043",
+    screen: "/pages/gk",
+  },
+  {
+    name: "Islamiyat",
+    icon: "mosque",
+    color: "#42A5F5",
+    screen: "/pages/islamiat",
+  },
+  {
+    name: "Urdu",
+    icon: "book-open-page-variant",
+    color: "#d62828",
+    screen: "/pages/urdu",
+  },
+];
+
 export default function KidsLearningHome() {
-  
   const router = useRouter();
 
   useEffect(() => {
     const checkAuth = async () => {
-      const username = await AsyncStorage.getItem("username");
-      const password = await AsyncStorage.getItem("password");
-      const loginTime = await AsyncStorage.getItem("loginTime");
+      try {
+        const [username, password, loginTime] = await Promise.all([
+          AsyncStorage.getItem("username"),
+          AsyncStorage.getItem("password"),
+          AsyncStorage.getItem("loginTime"),
+        ]);
 
-      const now = Date.now();
-      const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-      const isExpired = loginTime && now - parseInt(loginTime) > ONE_DAY_MS;
+        const now = Date.now();
+        const isExpired = loginTime && now - parseInt(loginTime) > ONE_DAY_MS;
 
-      if (!username || !password || isExpired) {
-        await AsyncStorage.clear();
-        router.replace("/login");
+        if (!username || !password || isExpired) {
+          await AsyncStorage.clear();
+          router.replace("/login");
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
       }
     };
 
     checkAuth();
-
-    // Optional: check every 10 minutes
-    const interval = setInterval(checkAuth, 10 * 60 * 1000);
+    const interval = setInterval(checkAuth, CHECK_INTERVAL_MS);
     return () => clearInterval(interval);
-  }, []);
-
-  const learningCategories = [
-    {
-      name: "Alphabet",
-      icon: "alphabetical",
-      color: "#FF9E3B",
-      screen: "/pages/abc",
-    },
-    {
-      name: "Numbers",
-      icon: "numeric",
-      color: "#6C63FF",
-      screen: "/pages/numbers",
-    },
-    {
-      name: "Shapes",
-      icon: "shape-outline",
-      color: "#4CAF50",
-      screen: "/pages/shapes",
-    },
-    {
-      name: "Colors",
-      icon: "palette",
-      color: "#F06292",
-      screen: "/pages/colors",
-    },
-    {
-      name: "Animals",
-      icon: "cat",
-      color: "#9e0059",
-      screen: "/pages/animals",
-    },
-    {
-      name: "Poems",
-      icon: "book-open-page-variant",
-      color: "#FFCA28",
-      screen: "/pages/poems",
-    },
-    {
-      name: "GK",
-      icon: "book",
-      color: "#FF7043",
-      screen: "/pages/gk",
-    },
-    {
-      name: "Islamiyat",
-      icon: "mosque",
-      color: "#42A5F5",
-      screen: "/pages/islamiat",
-    },
-
-    {
-      name: "Urdu",
-      icon: "book-open-page-variant",
-      color: "#d62828",
-      screen: "/pages/urdu",
-    },
-  ];
+  }, [router]);
 
   return (
     <ImageBackground
@@ -102,25 +107,19 @@ export default function KidsLearningHome() {
       style={styles.container}
       blurRadius={2}
     >
-      <ScrollView>
-        <View style={styles.header}>
-          <Text style={styles.title}>Kids Learning Fun!</Text>
-        </View>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.title}>Kids Learning Fun!</Text>
 
         <View style={styles.gridContainer}>
-          {learningCategories.map((category, index) => (
+          {learningCategories.map(({ name, icon, color, screen }) => (
             <TouchableOpacity
-              key={index}
-              style={[styles.categoryCard, { backgroundColor: category.color }]}
-              onPress={() => router.push(category.screen)}
+              key={name}
+              style={[styles.categoryCard, { backgroundColor: color }]}
+              onPress={() => router.push(screen)}
+              activeOpacity={0.8}
             >
-              <MaterialCommunityIcons
-                name={category.icon}
-                size={40}
-                color="#FFF"
-                style={styles.categoryIcon}
-              />
-              <Text style={styles.categoryText}>{category.name}</Text>
+              <MaterialCommunityIcons name={icon} size={40} color="#FFF" />
+              <Text style={styles.categoryText}>{name}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -133,17 +132,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
+  scrollContent: {
     padding: 16,
   },
   title: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: "bold",
     color: "#FFF",
+    textAlign: "center",
+    marginBottom: 20,
     textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
@@ -151,29 +148,27 @@ const styles = StyleSheet.create({
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
-    // marginBottom: 20,
+    justifyContent: "space-between",
   },
   categoryCard: {
-    width: "35%",
+    width: "47%",
     aspectRatio: 1,
     borderRadius: 16,
     marginBottom: 16,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
+    elevation: 4,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
-  categoryIcon: {
-    marginBottom: 8,
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
   categoryText: {
-    fontSize: 13,
+    marginTop: 8,
+    fontSize: 14,
     fontWeight: "bold",
     color: "#FFF",
+    textAlign: "center",
     textShadowColor: "rgba(0,0,0,0.3)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
