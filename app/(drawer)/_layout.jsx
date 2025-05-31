@@ -155,6 +155,22 @@ export default function Layout() {
             ),
           }}
         />
+
+        <Drawer.Screen
+          name="pages/foods"
+          options={{
+            drawerLabel: "Foods",
+            title: "Foods",
+            drawerIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="food-apple"
+                size={size}
+                color={color}
+              />
+            ),
+          }}
+        />
+
         <Drawer.Screen
           name="pages/poems"
           options={{
@@ -194,6 +210,17 @@ export default function Layout() {
             title: "Urdu",
             drawerIcon: ({ color, size }) => (
               <Entypo name="open-book" size={size} color={color} />
+            ),
+          }}
+        />
+
+        <Drawer.Screen
+          name="pages/test"
+          options={{
+            drawerLabel: "Test",
+            title: "Test",
+            drawerIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="draw" size={size} color={color} />
             ),
           }}
         />

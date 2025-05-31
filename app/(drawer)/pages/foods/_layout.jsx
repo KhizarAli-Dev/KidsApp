@@ -1,48 +1,52 @@
 import { Tabs } from "expo-router";
-import { MaterialIcons, FontAwesome5 } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Platform } from "react-native";
 
-export default function UrduTabsLayout() {
+export default function FoodsTabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#6C63FF",
         tabBarInactiveTintColor: "#888",
-        tabBarLabelStyle: {
-          fontSize: 14,
-          fontWeight: "600",
-        },
         tabBarStyle: {
-          paddingVertical: Platform.OS === "ios" ? 12 : 8,
-          height: Platform.OS === "ios" ? 70 : 60,
           backgroundColor: "#FFF",
+          paddingBottom: Platform.OS === "ios" ? 20 : 10,
+          paddingTop: 5,
+          height: Platform.OS === "ios" ? 80 : 65,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          position: "absolute",
           shadowColor: "#000",
           shadowOpacity: 0.1,
           shadowOffset: { width: 0, height: -2 },
-          shadowRadius: 8,
-          elevation: 8,
-          position: "absolute",
+          shadowRadius: 10,
+          elevation: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          fontWeight: "bold",
         },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Letters",
+          title: "Fruits",
           tabBarIcon: ({ color, size }) => (
-            <MaterialIcons name="text-fields" size={size + 4} color={color} />
+            <MaterialCommunityIcons name="fruit-watermelon" size={size + 4} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="sentences"
+        name="vegetables"
         options={{
-          title: "Sentences",
+          title: "Vegetables",
           tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="book-reader" size={size + 4} color={color} />
+            <MaterialCommunityIcons name="food-apple" size={size + 4} color={color} />
           ),
         }}
       />

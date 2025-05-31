@@ -7,9 +7,14 @@ import {
   FlatList,
   Platform,
   AccessibilityInfo,
+  Dimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "react-native";
+
+// Screen dimensions
+const { width } = Dimensions.get("window");
+const isTablet = width >= 768;
 
 const urduSentences = [
   "میں اسکول جا رہا ہوں۔",
@@ -28,7 +33,6 @@ export default function SentencesPage() {
   const speak = useCallback((text) => {
     Speech.stop();
     Speech.speak(text, { language: "ur-PK", rate: 0.6 });
-
     AccessibilityInfo.announceForAccessibility(`جملہ: ${text}`);
   }, []);
 
@@ -36,7 +40,9 @@ export default function SentencesPage() {
     <TouchableOpacity
       style={[
         styles.card,
-        { backgroundColor: index % 2 === 0 ? "#BA68C8" : "#4FC3F7" },
+        {
+          backgroundColor: index % 2 === 0 ? "#BA68C8" : "#4FC3F7",
+        },
       ]}
       onPress={() => speak(item)}
       activeOpacity={0.7}
@@ -51,19 +57,16 @@ export default function SentencesPage() {
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
-      resizeMode="cover"
     >
       <Text style={styles.title}>اردو جملے سیکھیں</Text>
       <FlatList
         data={urduSentences}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        initialNumToRender={10}
-        maxToRenderPerBatch={10}
-        windowSize={7}
+        contentContainerStyle={[
+          styles.scrollContent,
+          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
+        ]}        showsVerticalScrollIndicator={false}
       />
     </ImageBackground>
   );
@@ -74,24 +77,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   title: {
-    fontSize: 30,
+    fontSize: isTablet ? 36 : 28,
     fontWeight: "bold",
     textAlign: "center",
     color: "white",
-    paddingVertical: 10,
+    paddingVertical: isTablet ? 20 : 10,
     textShadowColor: "#000a",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
     fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
+    paddingHorizontal: isTablet ? 40 : 20,
+    paddingBottom: isTablet ? 30 : 20,
   },
   card: {
-    padding: 18,
-    borderRadius: 15,
-    marginBottom: 15,
+    padding: isTablet ? 28 : 18,
+    borderRadius: 20,
+    marginBottom: isTablet ? 20 : 14,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -102,7 +105,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   sentence: {
-    fontSize: 20,
+    fontSize: isTablet ? 26 : 20,
     color: "#fff",
     fontWeight: "600",
     textAlign: "center",

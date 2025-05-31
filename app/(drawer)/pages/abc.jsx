@@ -13,6 +13,10 @@ import { useFocusEffect } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 
+// Dynamically choose columns based on screen width
+const numColumns = width > 768 ? 6 : 4;
+const boxSize = (width - (numColumns + 1) * 10) / numColumns;
+
 const AlphabetSpeechApp = () => {
   const alphabet = Array.from({ length: 26 }, (_, i) => ({
     upper: String.fromCharCode(65 + i),
@@ -28,10 +32,10 @@ const AlphabetSpeechApp = () => {
   ];
 
   const speak = (letter) => {
-    Speech.stop(); // Stop any current speech
+    Speech.stop();
     Speech.speak(letter, {
       rate: 0.2,
-      pitch: 1.1,
+      pitch: 1,
       language: "en-US",
     });
   };
@@ -47,7 +51,14 @@ const AlphabetSpeechApp = () => {
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => speak(item.upper)}
-      style={[styles.box, { backgroundColor: colors[index % colors.length] }]}
+      style={[
+        styles.box,
+        {
+          backgroundColor: colors[index % colors.length],
+          width: boxSize,
+          height: boxSize,
+        },
+      ]}
     >
       <Text style={styles.letter}>{item.upper}</Text>
       <Text style={styles.smallLetter}>{item.lower}</Text>
@@ -67,7 +78,7 @@ const AlphabetSpeechApp = () => {
         data={alphabet}
         renderItem={renderItem}
         keyExtractor={(item) => item.upper}
-        numColumns={4}
+        numColumns={numColumns}
         contentContainerStyle={styles.grid}
       />
     </ImageBackground>
@@ -77,7 +88,6 @@ const AlphabetSpeechApp = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
   },
   title: {
     fontSize: 28,
@@ -85,22 +95,27 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 5,
     color: "white",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
   subtitle: {
     fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
     color: "white",
+    textShadowColor: "#000",
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 1,
   },
   grid: {
     paddingHorizontal: 10,
     justifyContent: "center",
+    paddingBottom: 20,
   },
   box: {
-    width: width / 4 - 20,
-    height: width / 4 - 20,
-    margin: 8,
-    borderRadius: 15,
+    margin: 5,
+    borderRadius: 12,
     justifyContent: "center",
     alignItems: "center",
     shadowColor: "#000",
@@ -110,14 +125,14 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   letter: {
-    fontSize: 32,
+    fontSize: 34,
     fontWeight: "bold",
     color: "white",
   },
   smallLetter: {
-    fontSize: 16,
+    fontSize: 18,
     color: "white",
-    marginTop: -5,
+    marginTop: -4,
   },
 });
 

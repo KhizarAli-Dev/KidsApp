@@ -5,9 +5,16 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
+  Dimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
+
+const { width, height } = Dimensions.get("window");
+
+// Adjust base font and padding relative to screen width
+const scaleFont = width < 400 ? 1 : width < 600 ? 1.2 : 1.4;
+const scalePadding = width < 400 ? 1 : width < 600 ? 1.3 : 1.6;
 
 const QUESTIONS = [
   "What is your name?",
@@ -19,16 +26,14 @@ const QUESTIONS = [
 ];
 
 const GK = () => {
-  // Stop speech when component unmounts
   useEffect(() => {
     return () => {
       Speech.stop();
     };
   }, []);
 
-  // Function to speak question
   const speakQuestion = useCallback((text) => {
-    Speech.stop(); // Stop any previous speech
+    Speech.stop();
     Speech.speak(text, {
       rate: 0.2,
       pitch: 1,
@@ -36,7 +41,6 @@ const GK = () => {
     });
   }, []);
 
-  // Render single card
   const renderItem = useCallback(
     ({ item }) => (
       <TouchableOpacity
@@ -54,7 +58,6 @@ const GK = () => {
     <ImageBackground
       source={require("../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
     >
       <Text style={styles.header}>General Knowledge</Text>
       <FlatList
@@ -73,11 +76,10 @@ export default GK;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 20,
+    paddingHorizontal: 16 * scalePadding,
   },
   header: {
-    fontSize: 28,
+    fontSize: 28 * scaleFont,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
@@ -87,13 +89,13 @@ const styles = StyleSheet.create({
     textShadowRadius: 3,
   },
   listContent: {
-    paddingBottom: 20,
+    paddingBottom: 20 * scalePadding,
   },
   card: {
     backgroundColor: "#E0F7FA",
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 20 * scalePadding,
+    borderRadius: 12 * scalePadding,
+    marginBottom: 12 * scalePadding,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -101,7 +103,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   questionText: {
-    fontSize: 18,
+    fontSize: 18 * scaleFont,
     color: "#333",
     fontWeight: "500",
   },

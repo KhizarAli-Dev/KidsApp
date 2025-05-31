@@ -14,6 +14,7 @@ import { ImageBackground } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
+const isTablet = width >= 768;
 
 const urduLetters = [
   "ا", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ",
@@ -28,42 +29,32 @@ const colors = [
 ];
 
 const UrduPage = () => {
-  // Memoize letters with assigned background colors once
-  const coloredLetters = useMemo(() => 
+  const coloredLetters = useMemo(() =>
     urduLetters.map(letter => ({
       letter,
       bgColor: colors[Math.floor(Math.random() * colors.length)],
     })),
   []);
 
-  // Speak Urdu letter with custom pronunciation for some letters
   const speakUrdu = useCallback((letter) => {
     Speech.stop();
-
     let toSpeak = letter;
     if (letter === "ق") toSpeak = "قاف";
     else if (letter === "ژ") toSpeak = "زے";
-
     Speech.speak(toSpeak, {
       language: "ur-PK",
       pitch: 1,
       rate: 0.6,
     });
-
-    // Announce for screen readers
     AccessibilityInfo.announceForAccessibility(`آواز: ${toSpeak}`);
   }, []);
 
-  // Stop speech on screen blur/unmount
   useFocusEffect(
     useCallback(() => {
-      return () => {
-        Speech.stop();
-      };
+      return () => Speech.stop();
     }, [])
   );
 
-  // Render single Urdu letter card
   const renderItem = useCallback(({ item }) => (
     <TouchableOpacity
       style={[styles.letterCard, { backgroundColor: item.bgColor }]}
@@ -80,23 +71,21 @@ const UrduPage = () => {
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={3}
-      resizeMode="cover"
     >
       <View style={styles.overlay}>
         <Text style={styles.heading}>📖 اردو حروف</Text>
 
         <FlatList
           data={coloredLetters}
-          numColumns={4}
+          numColumns={isTablet ? 6 : 4}
           keyExtractor={(item) => item.letter}
-          contentContainerStyle={styles.listContainer}
-          renderItem={renderItem}
+        contentContainerStyle={[
+          styles.listContainer,
+          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
+        ]}          renderItem={renderItem}
           columnWrapperStyle={{ flexDirection: "row-reverse" }}
           showsVerticalScrollIndicator={false}
-          initialNumToRender={16}
-          maxToRenderPerBatch={16}
-          windowSize={10}
+          initialNumToRender={20}
         />
       </View>
     </ImageBackground>
@@ -104,25 +93,33 @@ const UrduPage = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  overlay: { flex: 1, paddingHorizontal: 12 },
+  container: {
+    flex: 1,
+  },
+  overlay: {
+    flex: 1,
+    paddingHorizontal: isTablet ? 24 : 12,
+    paddingTop: isTablet ? 30 : 16,
+  },
   heading: {
-    fontSize: 32,
+    fontSize: isTablet ? 40 : 28,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
-    marginBottom: 24,
+    marginBottom: isTablet ? 30 : 20,
     textShadowColor: "#000000aa",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 6,
     fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
-  listContainer: { paddingBottom: 30 },
+  listContainer: {
+    paddingBottom: 40,
+  },
   letterCard: {
-    width: width / 4 - 20,
-    height: width / 4 - 20,
-    marginVertical: 10,
-    marginHorizontal: 6,
+    width: isTablet ? width / 6 - 24 : width / 4 - 20,
+    height: isTablet ? width / 6 - 24 : width / 4 - 20,
+    marginVertical: isTablet ? 14 : 10,
+    marginHorizontal: isTablet ? 8 : 6,
     borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
@@ -133,7 +130,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   letterText: {
-    fontSize: 40,
+    fontSize: isTablet ? 50 : 38,
     fontWeight: "700",
     color: "#1a1a1a",
     textShadowColor: "#ffffffbb",

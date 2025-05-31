@@ -6,13 +6,17 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  Platform,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
 import { useFocusEffect } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
-const BOX_SIZE = width / 3 - 20;
+
+// Responsive column & box size
+const numColumns = width > 768 ? 5 : 3;
+const BOX_SIZE = (width - (numColumns + 1) * 10) / numColumns;
 
 const Numbers = () => {
   const numbers = useMemo(() => Array.from({ length: 20 }, (_, i) => i + 1), []);
@@ -35,8 +39,8 @@ const Numbers = () => {
     Speech.stop();
     Speech.speak(numberWords[numberIndex], {
       rate: 0.2,
-      pitch: 1.1,
-      language: "en-US",
+      pitch: 1,
+      language: "en-IN",
     });
   }, [numberWords]);
 
@@ -51,7 +55,7 @@ const Numbers = () => {
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => speak(index)}
-      style={[styles.box, { backgroundColor: colors[index % colors.length] }]}
+      style={[styles.box, { backgroundColor: colors[index % colors.length], width: BOX_SIZE, height: BOX_SIZE }]}
       activeOpacity={0.8}
     >
       <Text style={styles.number}>{item}</Text>
@@ -74,9 +78,11 @@ const Numbers = () => {
         data={numbers}
         renderItem={renderItem}
         keyExtractor={(item) => item.toString()}
-        numColumns={3}
-        contentContainerStyle={styles.grid}
-        showsVerticalScrollIndicator={false}
+        numColumns={numColumns}
+        contentContainerStyle={[
+          styles.grid,
+          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
+        ]}        showsVerticalScrollIndicator={false}
       />
     </ImageBackground>
   );
@@ -85,11 +91,10 @@ const Numbers = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
+    marginVertical: 20,
   },
   title: {
     fontSize: 28,
@@ -107,12 +112,10 @@ const styles = StyleSheet.create({
   grid: {
     paddingHorizontal: 10,
     paddingBottom: 30,
-    alignItems: "center",
+    justifyContent: "center",
   },
   box: {
-    width: BOX_SIZE,
-    height: BOX_SIZE,
-    margin: 8,
+    margin: 5,
     borderRadius: 15,
     justifyContent: "center",
     alignItems: "center",
@@ -128,7 +131,7 @@ const styles = StyleSheet.create({
     color: "white",
   },
   word: {
-    fontSize: 14,
+    fontSize: 16,
     color: "white",
     marginTop: 4,
     textTransform: "uppercase",

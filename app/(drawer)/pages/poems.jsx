@@ -47,7 +47,7 @@ const Poems = () => {
     <ImageBackground
       source={require("../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
+      // blurRadius={2}
     >
       <FlatList
         data={poemsData}

@@ -6,7 +6,8 @@ import {
   View,
 } from "react-native";
 import * as Speech from "expo-speech";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Ionicons } from '@expo/vector-icons';
 
 const kalmas = [
   {
@@ -90,54 +91,94 @@ const duas = [
 
 const Islamiat = () => {
   const [activeTab, setActiveTab] = useState("kalmas");
+  const [isSpeaking, setIsSpeaking] = useState(false);
 
-const speak = (arabic, urdu) => {
-  Speech.stop(); // Stop any ongoing speech before starting a new one
-  Speech.speak(arabic, {
-    rate: 0.5,
-    pitch: 1,
-    language: "ar-SA",
-    onDone: () => {
-      Speech.speak(urdu, {
-        rate: 0.6,
-        pitch: 1,
-        language: "ur-PK",
-      });
-    },
-  });
-};
+  const speak = (arabic, urdu) => {
+    if (isSpeaking) {
+      Speech.stop();
+      setIsSpeaking(false);
+      return;
+    }
+    
+    setIsSpeaking(true);
+    Speech.stop(); // Stop any ongoing speech before starting a new one
+    
+    Speech.speak(arabic, {
+      rate: 0.5,
+      pitch: 1,
+      language: "ar-SA",
+      onDone: () => {
+        Speech.speak(urdu, {
+          rate: 0.6,
+          pitch: 1,
+          language: "ur-PK",
+          onDone: () => setIsSpeaking(false),
+          onStopped: () => setIsSpeaking(false),
+        });
+      },
+      onStopped: () => setIsSpeaking(false),
+    });
+  };
 
+  const stopSpeech = () => {
+    Speech.stop();
+    setIsSpeaking(false);
+  };
+
+  useEffect(() => {
+    return () => {
+      Speech.stop();
+    };
+  }, []);
 
   const dataToRender =
     activeTab === "kalmas" ? kalmas : activeTab === "surahs" ? surahs : duas;
 
   const renderItem = ({ item, index }) => (
-    <TouchableOpacity
-      style={[
-        styles.card,
-        { backgroundColor: index % 2 === 0 ? "#FFFDE7" : "#E0F7FA" },
-      ]}
-      onPress={() => speak(item.arabic, item.urdu)}
-      activeOpacity={0.7}
-    >
-      <Text style={styles.title}>{item.title}</Text>
-      <View style={styles.divider} />
-      <Text style={styles.arabic}>{item.arabic}</Text>
-      <Text style={styles.urdu}>{item.urdu}</Text>
-      <Text style={styles.tapToHear}>🔊 سننے کے لیے دبائیں</Text>
-    </TouchableOpacity>
+    <View style={[
+      styles.card,
+      { backgroundColor: index % 2 === 0 ? "#FFFDE7" : "#E0F7FA" },
+    ]}>
+      <TouchableOpacity
+        onPress={() => speak(item.arabic, item.urdu)}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.title}>{item.title}</Text>
+        <View style={styles.divider} />
+        <Text style={styles.arabic}>{item.arabic}</Text>
+        <Text style={styles.urdu}>{item.urdu}</Text>
+        <View style={styles.speechButtonContainer}>
+          {/* <Ionicons 
+            name={isSpeaking ? "stop-circle" : "play-circle"} 
+            size={24} 
+            color="#D84315" 
+          /> */}
+          <Text style={styles.tapToHear}>
+            🔊 سننے کے لیے دبائیں
+          </Text>
+        </View>
+      </TouchableOpacity>
+    </View>
   );
 
   return (
     <View style={{ flex: 1 }}>
-      <Text style={styles.header}>
-        📖 اسلامیات –{" "}
-        {activeTab === "kalmas"
-          ? "کلمے"
-          : activeTab === "surahs"
-          ? "سورتیں"
-          : "دعائیں"}
-      </Text>
+      <View style={styles.headerContainer}>
+        <Text style={styles.header}>
+          📖 اسلامیات –{" "}
+          {activeTab === "kalmas"
+            ? "کلمے"
+            : activeTab === "surahs"
+            ? "سورتیں"
+            : "دعائیں"}
+        </Text>
+        {isSpeaking && (
+          <TouchableOpacity onPress={stopSpeech} style={styles.stopButton}>
+            <Ionicons name="stop-circle" size={24} color="white" />
+            <Text style={styles.stopButtonText}>Stop</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       <FlatList
         data={dataToRender}
@@ -148,7 +189,10 @@ const speak = (arabic, urdu) => {
 
       <View style={styles.bottomNav}>
         <TouchableOpacity
-          onPress={() => setActiveTab("kalmas")}
+          onPress={() => {
+            stopSpeech();
+            setActiveTab("kalmas");
+          }}
           style={[
             styles.navItem,
             activeTab === "kalmas" && styles.navItemActive,
@@ -157,7 +201,10 @@ const speak = (arabic, urdu) => {
           <Text style={styles.navText}>کلمے</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setActiveTab("surahs")}
+          onPress={() => {
+            stopSpeech();
+            setActiveTab("surahs");
+          }}
           style={[
             styles.navItem,
             activeTab === "surahs" && styles.navItemActive,
@@ -166,7 +213,10 @@ const speak = (arabic, urdu) => {
           <Text style={styles.navText}>سورتیں</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => setActiveTab("duas")}
+          onPress={() => {
+            stopSpeech();
+            setActiveTab("duas");
+          }}
           style={[
             styles.navItem,
             activeTab === "duas" && styles.navItemActive,
@@ -187,15 +237,32 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 100,
   },
-  header: {
-    fontSize: 28,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 16,
-    color: "#4E342E",
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     backgroundColor: "#FFECB3",
     padding: 12,
     borderRadius: 12,
+    marginBottom: 16,
+  },
+  header: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#4E342E",
+  },
+  stopButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#D84315',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 20,
+  },
+  stopButtonText: {
+    color: 'white',
+    marginLeft: 5,
+    fontWeight: 'bold',
   },
   card: {
     padding: 20,
@@ -232,11 +299,17 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 10,
   },
+  speechButtonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
   tapToHear: {
     fontSize: 14,
     textAlign: "right",
     fontStyle: "italic",
     color: "#D84315",
+    marginLeft: 5,
   },
   bottomNav: {
     flexDirection: "row",

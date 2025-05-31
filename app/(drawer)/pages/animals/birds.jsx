@@ -8,6 +8,7 @@ import {
   FlatList,
   ImageBackground,
   Dimensions,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Speech from "expo-speech";
@@ -25,44 +26,42 @@ const BirdsScreen = () => {
       {
         name: "Eagle",
         image: require("../../../../assets/images/birds/eagle.webp"),
-        color: "#FF9E3B",
         realSound: require("../../../../assets/sounds/birds/eagle.mp3"),
       },
       {
         name: "Owl",
         image: require("../../../../assets/images/birds/owl.jpg"),
-        color: "#9E9E9E",
         realSound: require("../../../../assets/sounds/birds/owl.mp3"),
       },
       {
         name: "Parrot",
         image: require("../../../../assets/images/birds/parrot.webp"),
-        color: "#795548",
         realSound: require("../../../../assets/sounds/birds/parrot.mp3"),
       },
       {
         name: "Duck",
         image: require("../../../../assets/images/birds/duck.jpg"),
-        color: "#212121",
         realSound: require("../../../../assets/sounds/birds/duck.mp3"),
       },
       {
         name: "Finch",
         image: require("../../../../assets/images/birds/finch.jpg"),
-        color: "#000000",
         realSound: require("../../../../assets/sounds/birds/finch.mp3"),
       },
       {
         name: "Crow",
         image: require("../../../../assets/images/birds/crow.jpg"),
-        color: "#607D8B",
         realSound: require("../../../../assets/sounds/birds/crow.mp3"),
       },
       {
         name: "Pigeon",
         image: require("../../../../assets/images/birds/pigeon.jpg"),
-        color: "#607D8B",
         realSound: require("../../../../assets/sounds/birds/pigeon.mp3"),
+      },
+            {
+        name: "Chicken",
+        image: require("../../../../assets/images/birds/chicken.jpg"),
+        realSound: require("../../../../assets/sounds/birds/chicken.mp3"),
       },
     ],
     []
@@ -145,7 +144,7 @@ const BirdsScreen = () => {
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
+      // blurRadius={2}
     >
       <Text style={styles.title}>Birds Friends</Text>
       <Text style={styles.subtitle}>Tap to hear their sounds!</Text>
@@ -155,7 +154,10 @@ const BirdsScreen = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
         numColumns={2}
-        contentContainerStyle={styles.grid}
+        contentContainerStyle={[
+          styles.grid,
+          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
+        ]}
       />
     </ImageBackground>
   );

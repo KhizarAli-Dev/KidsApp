@@ -1,5 +1,8 @@
 import { Tabs } from "expo-router";
-import { FontAwesome5, MaterialIcons, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import {
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
+import { Platform } from "react-native";
 
 export default function NumberTabsLayout() {
   return (
@@ -7,7 +10,25 @@ export default function NumberTabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#6C63FF",
-        tabBarLabelStyle: { fontSize: 12 },
+        tabBarInactiveTintColor: "#888",
+        tabBarStyle: {
+          backgroundColor: "#FFF",
+          paddingBottom: Platform.OS === "ios" ? 20 : 10,
+          paddingTop: 5,
+          height: Platform.OS === "ios" ? 80 : 65,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          position: "absolute",
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowOffset: { width: 0, height: -2 },
+          shadowRadius: 10,
+          elevation: 10,
+        },
+        tabBarLabelStyle: {
+          fontSize: 13,
+          fontWeight: "bold",
+        },
       }}
     >
       <Tabs.Screen
@@ -15,7 +36,7 @@ export default function NumberTabsLayout() {
         options={{
           title: "Animals",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="cat" size={size} color={color} />
+            <MaterialCommunityIcons name="cat" size={size + 4} color={color} />
           ),
         }}
       />
@@ -24,7 +45,7 @@ export default function NumberTabsLayout() {
         options={{
           title: "Birds",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="bird" size={size} color={color} />
+            <MaterialCommunityIcons name="bird" size={size + 4} color={color} />
           ),
         }}
       />

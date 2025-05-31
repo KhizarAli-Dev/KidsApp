@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -34,7 +34,7 @@ const ShapesScreen = () => {
     Speech.stop();
     Speech.speak(shape.name, {
       rate: 0.2,
-      pitch: 1.1,
+      pitch: 1,
       language: 'en-US',
     });
   };
@@ -58,14 +58,14 @@ const ShapesScreen = () => {
   ), [activeShape]);
 
   useEffect(() => {
-    return () => Speech.stop(); // cleanup speech on unmount
+    return () => Speech.stop();
   }, []);
 
   return (
     <ImageBackground
       source={require('../../../assets/images/kidsbg.jpg')}
       style={styles.container}
-      blurRadius={2}
+      // blurRadius={2}
     >
       <View>
         <Text style={styles.title}>Shapes World</Text>

@@ -6,70 +6,32 @@ import {
   TouchableOpacity,
   ImageBackground,
   ScrollView,
+  Dimensions,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Constants
+const { width } = Dimensions.get("window");
+
+const scaleFont = width < 400 ? 1 : width < 600 ? 1.2 : 1.5;
+const scalePadding = width < 400 ? 1 : width < 600 ? 1.3 : 1.6;
+
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
 
 const learningCategories = [
-  {
-    name: "Alphabet",
-    icon: "alphabetical",
-    color: "#FF9E3B",
-    screen: "/pages/abc",
-  },
-  {
-    name: "Numbers",
-    icon: "numeric",
-    color: "#6C63FF",
-    screen: "/pages/numbers",
-  },
-  {
-    name: "Shapes",
-    icon: "shape-outline",
-    color: "#4CAF50",
-    screen: "/pages/shapes",
-  },
-  {
-    name: "Colors",
-    icon: "palette",
-    color: "#F06292",
-    screen: "/pages/colors",
-  },
-  {
-    name: "Animals",
-    icon: "cat",
-    color: "#9e0059",
-    screen: "/pages/animals",
-  },
-  {
-    name: "Poems",
-    icon: "book-open-page-variant",
-    color: "#FFCA28",
-    screen: "/pages/poems",
-  },
-  {
-    name: "GK",
-    icon: "book",
-    color: "#FF7043",
-    screen: "/pages/gk",
-  },
-  {
-    name: "Islamiyat",
-    icon: "mosque",
-    color: "#42A5F5",
-    screen: "/pages/islamiat",
-  },
-  {
-    name: "Urdu",
-    icon: "book-open-page-variant",
-    color: "#d62828",
-    screen: "/pages/urdu",
-  },
+  { name: "Alphabet", icon: "alphabetical", color: "#FF9E3B", screen: "/pages/abc" },
+  { name: "Numbers", icon: "numeric", color: "#6C63FF", screen: "/pages/numbers" },
+  { name: "Shapes", icon: "shape-outline", color: "#4CAF50", screen: "/pages/shapes" },
+  { name: "Colors", icon: "palette", color: "#F06292", screen: "/pages/colors" },
+  { name: "Animals", icon: "cat", color: "#9e0059", screen: "/pages/animals" },
+  { name: "Poems", icon: "book-open-page-variant", color: "#FFCA28", screen: "/pages/poems" },
+  { name: "GK", icon: "book", color: "#FF7043", screen: "/pages/gk" },
+  { name: "Islamiyat", icon: "mosque", color: "#42A5F5", screen: "/pages/islamiat" },
+  { name: "Urdu", icon: "book-open-page-variant", color: "#d62828", screen: "/pages/urdu" },
+  { name: "Foods", icon: "food-apple", color: "#00f5d4", screen: "/pages/foods" },
+  { name: "Test", icon: "draw", color: "#9b5de5", screen: "/pages/test" },
 ];
 
 export default function KidsLearningHome() {
@@ -105,9 +67,8 @@ export default function KidsLearningHome() {
     <ImageBackground
       source={require("../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView>
         <Text style={styles.title}>Kids Learning Fun!</Text>
 
         <View style={styles.gridContainer}>
@@ -118,7 +79,7 @@ export default function KidsLearningHome() {
               onPress={() => router.push(screen)}
               activeOpacity={0.8}
             >
-              <MaterialCommunityIcons name={icon} size={40} color="#FFF" />
+              <MaterialCommunityIcons name={icon} size={60 * scaleFont} color="#FFF" />
               <Text style={styles.categoryText}>{name}</Text>
             </TouchableOpacity>
           ))}
@@ -131,12 +92,10 @@ export default function KidsLearningHome() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollContent: {
-    padding: 16,
+    padding: 16 * scalePadding,
   },
   title: {
-    fontSize: 26,
+    fontSize: 26 * scaleFont,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
@@ -153,8 +112,8 @@ const styles = StyleSheet.create({
   categoryCard: {
     width: "47%",
     aspectRatio: 1,
-    borderRadius: 16,
-    marginBottom: 16,
+    borderRadius: 16 * scalePadding,
+    marginBottom: 16 * scalePadding,
     justifyContent: "center",
     alignItems: "center",
     elevation: 4,
@@ -165,7 +124,7 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     marginTop: 8,
-    fontSize: 14,
+    fontSize: 14 * scaleFont,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",

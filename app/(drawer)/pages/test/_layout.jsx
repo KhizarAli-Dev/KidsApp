@@ -1,16 +1,20 @@
 import { Tabs } from "expo-router";
-import { MaterialCommunityIcons, Ionicons } from "@expo/vector-icons";
+import {
+  MaterialIcons,
+  Ionicons,
+  MaterialCommunityIcons,
+} from "@expo/vector-icons";
 import { Platform } from "react-native";
 
-export default function NumberTabsLayout() {
+export default function TestTabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: "#6C63FF",
-        tabBarInactiveTintColor: "#888",
+        tabBarInactiveTintColor: "#999",
         tabBarStyle: {
-          backgroundColor: "#FFF",
+          backgroundColor: "#fff",
           paddingBottom: Platform.OS === "ios" ? 20 : 10,
           paddingTop: 5,
           height: Platform.OS === "ios" ? 80 : 65,
@@ -32,18 +36,27 @@ export default function NumberTabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: "Numbers",
+          title: "English",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="numeric" size={size + 4} color={color} />
+            <MaterialCommunityIcons name="alphabetical" size={size + 4} color={color} />
           ),
         }}
       />
       <Tabs.Screen
-        name="onetwothree"
+        name="urdu"
         options={{
-          title: "OneTwoThree",
+          title: "Urdu",
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="numeric" size={size + 4} color={color} />
+            <MaterialIcons name="language" size={size + 4} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="math"
+        options={{
+          title: "Math",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="calculator-variant" size={size + 4} color={color} />
           ),
         }}
       />

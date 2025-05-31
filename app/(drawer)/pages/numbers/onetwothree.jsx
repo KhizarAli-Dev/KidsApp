@@ -5,14 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Dimensions,
+  useWindowDimensions,
+  Platform,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
-
-const { width } = Dimensions.get("window");
-const CARD_WIDTH = width / 2 - 30;
 
 const NUMBERS = [
   { word: "one", letters: ["o", "n", "e"], color: "#FF5733" },
@@ -40,9 +38,13 @@ const NUMBERS = [
 const OneTwoThree = () => {
   const [activeNumber, setActiveNumber] = useState(null);
   const [timeouts, setTimeouts] = useState([]);
+  const { width } = useWindowDimensions();
+
+  const numColumns = width > 600 ? 3 : 2; // Tablet: 3 columns, Mobile: 2
+  const CARD_WIDTH = width / numColumns - 30;
 
   useEffect(() => {
-    return () => clearAllTimeouts(); // Cleanup on unmount
+    return () => clearAllTimeouts(); // Cleanup
   }, []);
 
   const clearAllTimeouts = () => {
@@ -80,6 +82,7 @@ const OneTwoThree = () => {
         styles.numberCard,
         {
           backgroundColor: item.color,
+          width: CARD_WIDTH,
           transform: [{ scale: activeNumber === item.word ? 1.05 : 1 }],
           opacity: activeNumber === item.word ? 1 : 0.9,
         },
@@ -102,7 +105,6 @@ const OneTwoThree = () => {
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
-      blurRadius={2}
     >
       <Text style={styles.title}>Learn Numbers</Text>
       <Text style={styles.subtitle}>Tap to hear the spelling</Text>
@@ -110,8 +112,11 @@ const OneTwoThree = () => {
         data={NUMBERS}
         renderItem={renderItem}
         keyExtractor={(item) => item.word}
-        numColumns={2}
-        contentContainerStyle={styles.listContent}
+        numColumns={numColumns}
+                contentContainerStyle={[
+          styles.listContent,
+          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
+        ]}
       />
     </ImageBackground>
   );
@@ -141,7 +146,6 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
   numberCard: {
-    width: CARD_WIDTH,
     height: 160,
     margin: 10,
     borderRadius: 25,

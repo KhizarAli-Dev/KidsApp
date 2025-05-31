@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Ionicons } from '@expo/vector-icons';
@@ -27,6 +28,11 @@ const COLORS = [
 
 const ColorsScreen = () => {
   const [activeColor, setActiveColor] = useState(null);
+  const screenWidth = Dimensions.get('window').width;
+
+  // Determine number of columns and card width dynamically
+  const numColumns = screenWidth > 768 ? 3 : 2;
+  const cardWidth = (screenWidth - (numColumns + 1) * 20) / numColumns;
 
   const speakColor = useCallback((color) => {
     setActiveColor(color.name);
@@ -39,39 +45,43 @@ const ColorsScreen = () => {
   }, []);
 
   useEffect(() => {
-    return () => Speech.stop(); // Cleanup on unmount
+    return () => Speech.stop(); // Cleanup
   }, []);
 
-  const renderItem = useCallback(({ item: color }) => (
-    <TouchableOpacity
-      style={[
-        styles.colorCard,
-        {
-          backgroundColor: color.hex,
-          borderColor: color.borderColor || color.hex,
-          transform: [{ scale: activeColor === color.name ? 1.05 : 1 }],
-        },
-      ]}
-      onPress={() => speakColor(color)}
-      activeOpacity={0.75}
-    >
-      <Text style={[styles.colorName, { color: color.textColor }]}>
-        {color.name}
-      </Text>
-      <Ionicons
-        name="color-palette"
-        size={24}
-        color={color.textColor}
-        style={styles.icon}
-      />
-    </TouchableOpacity>
-  ), [activeColor, speakColor]);
+  const renderItem = useCallback(
+    ({ item: color }) => (
+      <TouchableOpacity
+        style={[
+          styles.colorCard,
+          {
+            width: cardWidth,
+            backgroundColor: color.hex,
+            borderColor: color.borderColor || color.hex,
+            transform: [{ scale: activeColor === color.name ? 1.05 : 1 }],
+          },
+        ]}
+        onPress={() => speakColor(color)}
+        activeOpacity={0.75}
+      >
+        <Text style={[styles.colorName, { color: color.textColor }]}>
+          {color.name}
+        </Text>
+        <Ionicons
+          name="color-palette"
+          size={24}
+          color={color.textColor}
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+    ),
+    [activeColor, speakColor, cardWidth]
+  );
 
   return (
     <ImageBackground
       source={require('../../../assets/images/kidsbg.jpg')}
       style={styles.container}
-      blurRadius={2}
+      // blurRadius={2}
     >
       <Text style={styles.title}>Color Explorer</Text>
       <Text style={styles.subtitle}>Tap to learn colors!</Text>
@@ -80,7 +90,7 @@ const ColorsScreen = () => {
         data={COLORS}
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
-        numColumns={2}
+        numColumns={numColumns}
         contentContainerStyle={styles.grid}
       />
     </ImageBackground>
@@ -113,10 +123,9 @@ const styles = StyleSheet.create({
   grid: {
     paddingHorizontal: 10,
     paddingBottom: 20,
-    alignItems: 'center',
+    justifyContent: 'center',
   },
   colorCard: {
-    width: 150,
     height: 150,
     margin: 10,
     borderRadius: 20,
@@ -130,7 +139,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
   },
   colorName: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 8,
     textShadowColor: 'rgba(0,0,0,0.3)',

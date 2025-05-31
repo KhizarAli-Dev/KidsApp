@@ -18,57 +18,32 @@ import { useFocusEffect } from "@react-navigation/native";
 const { width } = Dimensions.get("window");
 const CARD_SIZE = width / 2 - 24;
 
-const AnimalsScreen = () => {
+const VegetablesScreen = () => {
   const currentSound = useRef(null);
 
-  const animals = useMemo(
+  const veg = useMemo(
     () => [
       {
-        name: "Lion",
-        sound: "roar",
-        image: require("../../../../assets/images/animals/lion.jpg"),
-        realSound: require("../../../../assets/sounds/animals/lion2.mp3"),
+        name: "Tomato",
+        image: require("../../../../assets/images/vegetables/tomato.jpg"),
       },
       {
-        name: "Elephant",
-        image: require("../../../../assets/images/animals/elephant.webp"),
-        realSound: require("../../../../assets/sounds/animals/elephant.mp3"),
+        name: "Onion",
+        image: require("../../../../assets/images/vegetables/onion.jpg"),
       },
       {
-        name: "Monkey",
-        image: require("../../../../assets/images/animals/monkey.jpg"),
-        realSound: require("../../../../assets/sounds/animals/monkey.mp3"),
+        name: "Carrot",
+        image: require("../../../../assets/images/vegetables/carrot.jpg"),
       },
-      {
-        name: "Zebra",
-        image: require("../../../../assets/images/animals/zebra.webp"),
-        realSound: require("../../../../assets/sounds/animals/zebra.mp3"),
+            {
+        name: "Bringle",
+        image: require("../../../../assets/images/vegetables/bringle.jpg"),
       },
-      {
-        name: "Penguin",
-        image: require("../../../../assets/images/animals/penguin.jpg"),
-        realSound: require("../../../../assets/sounds/animals/penguin.mp3"),
+                  {
+        name: "Lemon",
+        image: require("../../../../assets/images/vegetables/lemon.jpg"),
       },
-      {
-        name: "Hippo",
-        image: require("../../../../assets/images/animals/hippo.webp"),
-        realSound: require("../../../../assets/sounds/animals/hippo.mp3"),
-      },
-      {
-        name: "Cat",
-        image: require("../../../../assets/images/animals/cat.jpg"),
-        realSound: require("../../../../assets/sounds/animals/cat.mp3"),
-      },
-      {
-        name: "Horse",
-        image: require("../../../../assets/images/animals/horse.jpeg"),
-        realSound: require("../../../../assets/sounds/animals/horse.mp3"),
-      },
-      {
-        name: "Cow",
-        image: require("../../../../assets/images/animals/cow.jpg"),
-        realSound: require("../../../../assets/sounds/animals/cow.mp3"),
-      },
+    
     ],
     []
   );
@@ -86,30 +61,15 @@ const AnimalsScreen = () => {
     }
   };
 
-  const playSound = async (animal) => {
+  const playSound = async (fruitnames) => {
     try {
       await cleanupSound();
       Speech.stop();
 
-      Speech.speak(animal.name, {
-        rate: 0.25,
-        pitch: 1.1,
-        language: "en-US",
-        onDone: async () => {
-          try {
-            const { sound } = await Audio.Sound.createAsync(animal.realSound);
-            currentSound.current = sound;
-            await sound.playAsync();
-
-            sound.setOnPlaybackStatusUpdate((status) => {
-              if (status.didJustFinish) {
-                cleanupSound();
-              }
-            });
-          } catch (error) {
-            console.warn("Failed to load or play sound:", error);
-          }
-        },
+      Speech.speak(fruitnames.name, {
+        rate: 0.50,
+        pitch: 1,
+        language: "en-IN",
       });
     } catch (error) {
       console.warn("Error in playSound:", error);
@@ -152,19 +112,18 @@ const AnimalsScreen = () => {
       style={styles.container}
       // blurRadius={2}
     >
-      <Text style={styles.title}>Animal Friends</Text>
-      <Text style={styles.subtitle}>Tap to hear their sounds!</Text>
+      <Text style={styles.title}>Vegetables</Text>
+      <Text style={styles.subtitle}>Tap to hear their names!</Text>
 
       <FlatList
-        data={animals}
+        data={veg}
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
         numColumns={2}
         contentContainerStyle={[
           styles.grid,
           { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
-        ]}
-      />
+        ]}      />
     </ImageBackground>
   );
 };
@@ -172,7 +131,6 @@ const AnimalsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 40,
   },
   title: {
     fontSize: 28,
@@ -233,4 +191,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AnimalsScreen;
+export default VegetablesScreen;
