@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ImageBackground,
-  ScrollView,
+  FlatList,
   Dimensions,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -14,8 +14,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const { width } = Dimensions.get("window");
 
-const scaleFont = width < 400 ? 1 : width < 600 ? 1.2 : 1.5;
-const scalePadding = width < 400 ? 1 : width < 600 ? 1.3 : 1.6;
+// Responsive scaling
+const isTablet = width >= 768;
+const numColumns = isTablet ? 4 : 2;
+const scaleFont = isTablet ? 1.5 : width < 400 ? 1 : 1.2;
+const scalePadding = isTablet ? 1.5 : width < 400 ? 1 : 1.2;
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
@@ -32,6 +35,8 @@ const learningCategories = [
   { name: "Urdu", icon: "book-open-page-variant", color: "#d62828", screen: "/pages/urdu" },
   { name: "Foods", icon: "food-apple", color: "#00f5d4", screen: "/pages/foods" },
   { name: "Test", icon: "draw", color: "#9b5de5", screen: "/pages/test" },
+    { name: "Trace", icon: "draw", color: "#3c096c", screen: "/pages/trace" },
+
 ];
 
 export default function KidsLearningHome() {
@@ -63,28 +68,31 @@ export default function KidsLearningHome() {
     return () => clearInterval(interval);
   }, [router]);
 
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      style={[styles.categoryCard, { backgroundColor: item.color }]}
+      onPress={() => router.push(item.screen)}
+      activeOpacity={0.8}
+    >
+      <MaterialCommunityIcons name={item.icon} size={60 * scaleFont} color="#FFF" />
+      <Text style={styles.categoryText}>{item.name}</Text>
+    </TouchableOpacity>
+  );
+
   return (
     <ImageBackground
       source={require("../../assets/images/kidsbg.jpg")}
       style={styles.container}
     >
-      <ScrollView>
-        <Text style={styles.title}>Kids Learning Fun!</Text>
-
-        <View style={styles.gridContainer}>
-          {learningCategories.map(({ name, icon, color, screen }) => (
-            <TouchableOpacity
-              key={name}
-              style={[styles.categoryCard, { backgroundColor: color }]}
-              onPress={() => router.push(screen)}
-              activeOpacity={0.8}
-            >
-              <MaterialCommunityIcons name={icon} size={60 * scaleFont} color="#FFF" />
-              <Text style={styles.categoryText}>{name}</Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
+      <Text style={styles.title}>Kids Learning Fun!</Text>
+      <FlatList
+        data={learningCategories}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.name}
+        numColumns={numColumns}
+        contentContainerStyle={styles.listContent}
+        columnWrapperStyle={numColumns > 1 && styles.row}
+      />
     </ImageBackground>
   );
 }
@@ -104,16 +112,17 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  gridContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
+  listContent: {
+    paddingBottom: 40,
+  },
+  row: {
     justifyContent: "space-between",
   },
   categoryCard: {
-    width: "47%",
+    flex: 1,
+    margin: 8,
     aspectRatio: 1,
     borderRadius: 16 * scalePadding,
-    marginBottom: 16 * scalePadding,
     justifyContent: "center",
     alignItems: "center",
     elevation: 4,

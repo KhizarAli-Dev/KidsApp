@@ -225,6 +225,17 @@ export default function Layout() {
           }}
         />
 
+                <Drawer.Screen
+          name="pages/trace"
+          options={{
+            drawerLabel: "Trace",
+            title: "Trace",
+            drawerIcon: ({ color, size }) => (
+              <MaterialCommunityIcons name="draw" size={size} color={color} />
+            ),
+          }}
+        />
+
         <Drawer.Screen
           name="pages/about"
           options={{
