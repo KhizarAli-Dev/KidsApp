@@ -5,16 +5,13 @@ import {
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  Dimensions,
   Platform,
   AccessibilityInfo,
+  useWindowDimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-
-const { width } = Dimensions.get("window");
-const isTablet = width >= 768;
 
 const urduLetters = [
   "ا", "ب", "پ", "ت", "ٹ", "ث", "ج", "چ", "ح", "خ",
@@ -29,6 +26,15 @@ const colors = [
 ];
 
 const UrduPage = () => {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
+  // Adjust number of columns based on orientation and device size
+  const numColumns = isLandscape ? 6 : 4;
+
+  // Calculate card size dynamically
+  const cardSize = width / numColumns - (isLandscape ? 20 : 16);
+
   const coloredLetters = useMemo(() =>
     urduLetters.map(letter => ({
       letter,
@@ -57,15 +63,17 @@ const UrduPage = () => {
 
   const renderItem = useCallback(({ item }) => (
     <TouchableOpacity
-      style={[styles.letterCard, { backgroundColor: item.bgColor }]}
+      style={[styles.letterCard, { backgroundColor: item.bgColor, width: cardSize, height: cardSize }]}
       onPress={() => speakUrdu(item.letter)}
       activeOpacity={0.7}
       accessibilityLabel={`اردو حرف ${item.letter}`}
       accessibilityRole="button"
     >
-      <Text style={styles.letterText}>{item.letter}</Text>
+      <Text style={[styles.letterText, { fontSize: cardSize / 2 }]}>
+        {item.letter}
+      </Text>
     </TouchableOpacity>
-  ), [speakUrdu]);
+  ), [speakUrdu, cardSize]);
 
   return (
     <ImageBackground
@@ -73,16 +81,15 @@ const UrduPage = () => {
       style={styles.container}
     >
       <View style={styles.overlay}>
-        <Text style={styles.heading}>📖 اردو حروف</Text>
+        <Text style={[styles.heading, { fontSize: isLandscape ? 36 : 28 }]}>📖 اردو حروف</Text>
 
         <FlatList
           data={coloredLetters}
-          numColumns={isTablet ? 6 : 4}
+          numColumns={numColumns}
+          key={numColumns} // re-render on orientation change
           keyExtractor={(item) => item.letter}
-        contentContainerStyle={[
-          styles.listContainer,
-          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
-        ]}          renderItem={renderItem}
+          contentContainerStyle={[styles.listContainer, { paddingBottom: Platform.OS === "ios" ? 100 : 85 }]}
+          renderItem={renderItem}
           columnWrapperStyle={{ flexDirection: "row-reverse" }}
           showsVerticalScrollIndicator={false}
           initialNumToRender={20}
@@ -93,33 +100,22 @@ const UrduPage = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  overlay: {
-    flex: 1,
-    paddingHorizontal: isTablet ? 24 : 12,
-    paddingTop: isTablet ? 30 : 16,
-  },
+  container: { flex: 1 },
+  overlay: { flex: 1, paddingHorizontal: 12, paddingTop: 16 },
   heading: {
-    fontSize: isTablet ? 40 : 28,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
-    marginBottom: isTablet ? 30 : 20,
+    marginBottom: 20,
     textShadowColor: "#000000aa",
     textShadowOffset: { width: 2, height: 2 },
     textShadowRadius: 6,
     fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
-  listContainer: {
-    paddingBottom: 40,
-  },
+  listContainer: { paddingBottom: 40 },
   letterCard: {
-    width: isTablet ? width / 6 - 24 : width / 4 - 20,
-    height: isTablet ? width / 6 - 24 : width / 4 - 20,
-    marginVertical: isTablet ? 14 : 10,
-    marginHorizontal: isTablet ? 8 : 6,
+    marginVertical: 10,
+    marginHorizontal: 6,
     borderRadius: 22,
     justifyContent: "center",
     alignItems: "center",
@@ -130,7 +126,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   letterText: {
-    fontSize: isTablet ? 50 : 38,
     fontWeight: "700",
     color: "#1a1a1a",
     textShadowColor: "#ffffffbb",

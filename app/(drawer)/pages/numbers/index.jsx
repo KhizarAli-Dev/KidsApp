@@ -5,44 +5,56 @@ import {
   StyleSheet,
   FlatList,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   Platform,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
 import { useFocusEffect } from "@react-navigation/native";
 
-const { width } = Dimensions.get("window");
-
-// Responsive column & box size
-const numColumns = width > 768 ? 5 : 3;
-const BOX_SIZE = (width - (numColumns + 1) * 10) / numColumns;
-
 const Numbers = () => {
+  const { width, height } = useWindowDimensions();
+  const isPortrait = height >= width;
+
+  // Adjust number of columns based on orientation
+  const numColumns = isPortrait ? 3 : 5;
+
+  // Calculate box size dynamically based on width and columns
+  const BOX_SIZE = (width - (numColumns + 1) * 10) / numColumns;
+
   const numbers = useMemo(() => Array.from({ length: 20 }, (_, i) => i + 1), []);
 
-  const numberWords = useMemo(() => [
-    "One", "Two", "Three", "Four", "Five",
-    "Six", "Seven", "Eight", "Nine", "Ten",
-    "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
-    "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
-  ], []);
+  const numberWords = useMemo(
+    () => [
+      "One", "Two", "Three", "Four", "Five",
+      "Six", "Seven", "Eight", "Nine", "Ten",
+      "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen",
+      "Sixteen", "Seventeen", "Eighteen", "Nineteen", "Twenty",
+    ],
+    []
+  );
 
-  const colors = useMemo(() => [
-    "#FF5733", "#33FF57", "#3357FF", "#F333FF", "#33FFF5",
-    "#FF33A8", "#A833FF", "#33FF8C", "#FF8C33", "#33A8FF",
-    "#FF3361", "#61FF33", "#6133FF", "#FF33F5", "#33FFC1",
-    "#FFC133", "#C133FF", "#33FF61", "#FF6133", "#33C1FF",
-  ], []);
+  const colors = useMemo(
+    () => [
+      "#FF5733", "#33FF57", "#3357FF", "#F333FF", "#33FFF5",
+      "#FF33A8", "#A833FF", "#33FF8C", "#FF8C33", "#33A8FF",
+      "#FF3361", "#61FF33", "#6133FF", "#FF33F5", "#33FFC1",
+      "#FFC133", "#C133FF", "#33FF61", "#FF6133", "#33C1FF",
+    ],
+    []
+  );
 
-  const speak = useCallback((numberIndex) => {
-    Speech.stop();
-    Speech.speak(numberWords[numberIndex], {
-      rate: 0.2,
-      pitch: 1,
-      language: "en-IN",
-    });
-  }, [numberWords]);
+  const speak = useCallback(
+    (numberIndex) => {
+      Speech.stop();
+      Speech.speak(numberWords[numberIndex], {
+        rate: 0.2,
+        pitch: 1,
+        language: "en-IN",
+      });
+    },
+    [numberWords]
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -55,7 +67,14 @@ const Numbers = () => {
   const renderItem = ({ item, index }) => (
     <TouchableOpacity
       onPress={() => speak(index)}
-      style={[styles.box, { backgroundColor: colors[index % colors.length], width: BOX_SIZE, height: BOX_SIZE }]}
+      style={[
+        styles.box,
+        {
+          backgroundColor: colors[index % colors.length],
+          width: BOX_SIZE,
+          height: BOX_SIZE,
+        },
+      ]}
       activeOpacity={0.8}
     >
       <Text style={styles.number}>{item}</Text>
@@ -82,20 +101,17 @@ const Numbers = () => {
         contentContainerStyle={[
           styles.grid,
           { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
-        ]}        showsVerticalScrollIndicator={false}
+        ]}
+        showsVerticalScrollIndicator={false}
+        key={numColumns} // Important: re-render FlatList when numColumns changes
       />
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    alignItems: "center",
-    marginVertical: 20,
-  },
+  container: { flex: 1 },
+  header: { alignItems: "center", marginVertical: 20 },
   title: {
     fontSize: 28,
     fontWeight: "bold",

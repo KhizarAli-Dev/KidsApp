@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
+  Dimensions,
 } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,6 +29,23 @@ const SHAPES = [
 
 const ShapesScreen = () => {
   const [activeShape, setActiveShape] = useState(null);
+  const [orientation, setOrientation] = useState('portrait');
+
+  // Detect orientation change
+  useEffect(() => {
+    const updateOrientation = () => {
+      const { width, height } = Dimensions.get('window');
+      setOrientation(width > height ? 'landscape' : 'portrait');
+    };
+
+    updateOrientation(); // Initial check
+
+    const subscription = Dimensions.addEventListener('change', updateOrientation);
+
+    return () => {
+      subscription?.remove();
+    };
+  }, []);
 
   const speakShape = (shape) => {
     setActiveShape(shape.name);
@@ -39,23 +57,31 @@ const ShapesScreen = () => {
     });
   };
 
-  const renderItem = useCallback(({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.shapeCard,
-        {
-          backgroundColor: item.color,
-          transform: [{ scale: activeShape === item.name ? 1.05 : 1 }],
-        },
-      ]}
-      onPress={() => speakShape(item)}
-      activeOpacity={0.75}
-    >
-      <MaterialCommunityIcons name={item.icon} size={60} color="#FFF" />
-      <Text style={styles.shapeName}>{item.name}</Text>
-      <Ionicons name="volume-high" size={24} color="#FFF" style={styles.icon} />
-    </TouchableOpacity>
-  ), [activeShape]);
+  const renderItem = useCallback(
+    ({ item }) => (
+      <TouchableOpacity
+        style={[
+          styles.shapeCard,
+          {
+            backgroundColor: item.color,
+            transform: [{ scale: activeShape === item.name ? 1.05 : 1 }],
+          },
+        ]}
+        onPress={() => speakShape(item)}
+        activeOpacity={0.75}
+      >
+        <MaterialCommunityIcons name={item.icon} size={60} color="#FFF" />
+        <Text style={styles.shapeName}>{item.name}</Text>
+        <Ionicons
+          name="volume-high"
+          size={24}
+          color="#FFF"
+          style={styles.icon}
+        />
+      </TouchableOpacity>
+    ),
+    [activeShape]
+  );
 
   useEffect(() => {
     return () => Speech.stop();
@@ -76,9 +102,13 @@ const ShapesScreen = () => {
         data={SHAPES}
         renderItem={renderItem}
         keyExtractor={(item) => item.name}
-        numColumns={2}
-        contentContainerStyle={styles.grid}
+        numColumns={orientation === 'portrait' ? 2 : 4} // change columns based on orientation
+        contentContainerStyle={[
+          styles.grid,
+          orientation === 'landscape' && { paddingHorizontal: 40 }, // more padding in landscape
+        ]}
         showsVerticalScrollIndicator={false}
+        key={orientation} // important to force re-render FlatList on orientation change
       />
     </ImageBackground>
   );

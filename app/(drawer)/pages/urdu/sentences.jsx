@@ -7,14 +7,10 @@ import {
   FlatList,
   Platform,
   AccessibilityInfo,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "react-native";
-
-// Screen dimensions
-const { width } = Dimensions.get("window");
-const isTablet = width >= 768;
 
 const urduSentences = [
   "میں اسکول جا رہا ہوں۔",
@@ -30,6 +26,9 @@ const urduSentences = [
 ];
 
 export default function SentencesPage() {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
   const speak = useCallback((text) => {
     Speech.stop();
     Speech.speak(text, { language: "ur-PK", rate: 0.6 });
@@ -42,6 +41,7 @@ export default function SentencesPage() {
         styles.card,
         {
           backgroundColor: index % 2 === 0 ? "#BA68C8" : "#4FC3F7",
+          paddingVertical: isLandscape ? 22 : 14,
         },
       ]}
       onPress={() => speak(item)}
@@ -49,52 +49,46 @@ export default function SentencesPage() {
       accessibilityRole="button"
       accessibilityLabel={`اردو جملہ: ${item}`}
     >
-      <Text style={styles.sentence}>{item}</Text>
+      <Text style={[styles.sentence, { fontSize: isLandscape ? 24 : 20 }]}>{item}</Text>
     </TouchableOpacity>
-  ), [speak]);
+  ), [speak, isLandscape]);
 
   return (
     <ImageBackground
       source={require("../../../../assets/images/kidsbg.jpg")}
       style={styles.container}
     >
-      <Text style={styles.title}>اردو جملے سیکھیں</Text>
+      <Text style={[styles.title, { fontSize: isLandscape ? 36 : 28 }]}>اردو جملے سیکھیں</Text>
       <FlatList
         data={urduSentences}
         keyExtractor={(_, index) => index.toString()}
         renderItem={renderItem}
-        contentContainerStyle={[
-          styles.scrollContent,
-          { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
-        ]}        showsVerticalScrollIndicator={false}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: Platform.OS === "ios" ? 100 : 85 }]}
+        showsVerticalScrollIndicator={false}
       />
     </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   title: {
-    fontSize: isTablet ? 36 : 28,
     fontWeight: "bold",
     textAlign: "center",
     color: "white",
-    paddingVertical: isTablet ? 20 : 10,
+    paddingVertical: 10,
     textShadowColor: "#000a",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
     fontFamily: Platform.OS === "ios" ? "ArialHebrew" : "sans-serif",
   },
   scrollContent: {
-    paddingHorizontal: isTablet ? 40 : 20,
-    paddingBottom: isTablet ? 30 : 20,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
   card: {
-    padding: isTablet ? 28 : 18,
     borderRadius: 20,
-    marginBottom: isTablet ? 20 : 14,
+    marginBottom: 14,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -105,7 +99,6 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
   },
   sentence: {
-    fontSize: isTablet ? 26 : 20,
     color: "#fff",
     fontWeight: "600",
     textAlign: "center",

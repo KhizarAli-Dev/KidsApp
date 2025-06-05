@@ -25,26 +25,57 @@ const NUMBERS = [
   { word: "ten", letters: ["t", "e", "n"], color: "#33A8FF" },
   { word: "eleven", letters: ["e", "l", "e", "v", "e", "n"], color: "#FF33B5" },
   { word: "twelve", letters: ["t", "w", "e", "l", "v", "e"], color: "#FF5733" },
-  { word: "thirteen", letters: ["t", "h", "i", "r", "t", "e", "e", "n"], color: "#33FF57" },
-  { word: "fourteen", letters: ["f", "o", "u", "r", "t", "e", "e", "n"], color: "#3357FF" },
-  { word: "fifteen", letters: ["f", "i", "f", "t", "e", "e", "n"], color: "#F333FF" },
-  { word: "sixteen", letters: ["s", "i", "x", "t", "e", "e", "n"], color: "#33FFF5" },
-  { word: "seventeen", letters: ["s", "e", "v", "e", "n", "t", "e", "e", "n"], color: "#FF33A8" },
-  { word: "eighteen", letters: ["e", "i", "g", "h", "t", "e", "e", "n"], color: "#A833FF" },
-  { word: "nineteen", letters: ["n", "i", "n", "e", "t", "e", "e", "n"], color: "#33FF8C" },
+  {
+    word: "thirteen",
+    letters: ["t", "h", "i", "r", "t", "e", "e", "n"],
+    color: "#33FF57",
+  },
+  {
+    word: "fourteen",
+    letters: ["f", "o", "u", "r", "t", "e", "e", "n"],
+    color: "#3357FF",
+  },
+  {
+    word: "fifteen",
+    letters: ["f", "i", "f", "t", "e", "e", "n"],
+    color: "#F333FF",
+  },
+  {
+    word: "sixteen",
+    letters: ["s", "i", "x", "t", "e", "e", "n"],
+    color: "#33FFF5",
+  },
+  {
+    word: "seventeen",
+    letters: ["s", "e", "v", "e", "n", "t", "e", "e", "n"],
+    color: "#FF33A8",
+  },
+  {
+    word: "eighteen",
+    letters: ["e", "i", "g", "h", "t", "e", "e", "n"],
+    color: "#A833FF",
+  },
+  {
+    word: "nineteen",
+    letters: ["n", "i", "n", "e", "t", "e", "e", "n"],
+    color: "#33FF8C",
+  },
   { word: "twenty", letters: ["t", "w", "e", "n", "t", "y"], color: "#FF8C33" },
 ];
 
 const OneTwoThree = () => {
   const [activeNumber, setActiveNumber] = useState(null);
   const [timeouts, setTimeouts] = useState([]);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
 
-  const numColumns = width > 600 ? 3 : 2; // Tablet: 3 columns, Mobile: 2
+  const isPortrait = height >= width;
+
+  // Columns based on orientation
+  const numColumns = isPortrait ? 2 : 4;
   const CARD_WIDTH = width / numColumns - 30;
 
   useEffect(() => {
-    return () => clearAllTimeouts(); // Cleanup
+    return () => clearAllTimeouts();
   }, []);
 
   const clearAllTimeouts = () => {
@@ -97,7 +128,12 @@ const OneTwoThree = () => {
           </Text>
         ))}
       </View>
-      <Ionicons name="volume-high" size={24} color="#FFF" style={styles.soundIcon} />
+      <Ionicons
+        name="volume-high"
+        size={24}
+        color="#FFF"
+        style={styles.soundIcon}
+      />
     </TouchableOpacity>
   );
 
@@ -113,19 +149,19 @@ const OneTwoThree = () => {
         renderItem={renderItem}
         keyExtractor={(item) => item.word}
         numColumns={numColumns}
-                contentContainerStyle={[
+        contentContainerStyle={[
           styles.listContent,
           { paddingBottom: Platform.OS === "ios" ? 100 : 85 },
         ]}
+        showsVerticalScrollIndicator={false}
+        key={numColumns} // re-render FlatList on orientation change
       />
     </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   title: {
     fontSize: 32,
     fontWeight: "bold",
@@ -184,20 +220,17 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#FFF",
     marginHorizontal: 2,
-    textShadowColor: "rgba(0,0,0,0.3)",
+    textShadowColor: "rgba(0,0,0,0.4)",
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 1,
   },
   soundIcon: {
     position: "absolute",
-    bottom: 12,
-    right: 12,
-    textShadowColor: "rgba(0,0,0,0.3)",
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    bottom: 10,
+    right: 10,
+    opacity: 0.8,
   },
   listContent: {
-    paddingBottom: 80,
     paddingHorizontal: 10,
   },
 });

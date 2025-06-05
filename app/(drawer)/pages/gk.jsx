@@ -5,16 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   FlatList,
-  Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { ImageBackground } from "expo-image";
-
-const { width, height } = Dimensions.get("window");
-
-// Adjust base font and padding relative to screen width
-const scaleFont = width < 400 ? 1 : width < 600 ? 1.2 : 1.4;
-const scalePadding = width < 400 ? 1 : width < 600 ? 1.3 : 1.6;
 
 const QUESTIONS = [
   "What is your name?",
@@ -26,6 +20,13 @@ const QUESTIONS = [
 ];
 
 const GK = () => {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
+  // Scale factors: landscape thoda chhota fonts aur padding ke liye
+  const scaleFont = isLandscape ? 0.9 : width < 400 ? 1 : width < 600 ? 1.2 : 1.4;
+  const scalePadding = isLandscape ? 1 : width < 400 ? 1 : width < 600 ? 1.3 : 1.6;
+
   useEffect(() => {
     return () => {
       Speech.stop();
@@ -44,28 +45,33 @@ const GK = () => {
   const renderItem = useCallback(
     ({ item }) => (
       <TouchableOpacity
-        style={styles.card}
+        style={[styles.card, { padding: 20 * scalePadding, marginBottom: 12 * scalePadding, borderRadius: 12 * scalePadding }]}
         onPress={() => speakQuestion(item)}
         activeOpacity={0.7}
       >
-        <Text style={styles.questionText}>{item}</Text>
+        <Text style={[styles.questionText, { fontSize: 18 * scaleFont }]}>
+          {item}
+        </Text>
       </TouchableOpacity>
     ),
-    [speakQuestion]
+    [speakQuestion, scaleFont, scalePadding]
   );
 
   return (
     <ImageBackground
       source={require("../../../assets/images/kidsbg.jpg")}
-      style={styles.container}
+      style={[styles.container, { paddingHorizontal: 16 * scalePadding }]}
     >
-      <Text style={styles.header}>General Knowledge</Text>
+      <Text style={[styles.header, { fontSize: 28 * scaleFont, marginBottom: 20 * scalePadding }]}>
+        General Knowledge
+      </Text>
       <FlatList
         data={QUESTIONS}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={{ paddingBottom: 20 * scalePadding }}
         showsVerticalScrollIndicator={false}
+        key={isLandscape ? "h" : "v"} // re-render on orientation change
       />
     </ImageBackground>
   );
@@ -76,26 +82,17 @@ export default GK;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16 * scalePadding,
   },
   header: {
-    fontSize: 28 * scaleFont,
     fontWeight: "bold",
     color: "#FFF",
     textAlign: "center",
-    marginBottom: 20,
     textShadowColor: "rgba(0,0,0,0.4)",
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 3,
   },
-  listContent: {
-    paddingBottom: 20 * scalePadding,
-  },
   card: {
     backgroundColor: "#E0F7FA",
-    padding: 20 * scalePadding,
-    borderRadius: 12 * scalePadding,
-    marginBottom: 12 * scalePadding,
     elevation: 3,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -103,7 +100,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   questionText: {
-    fontSize: 18 * scaleFont,
     color: "#333",
     fontWeight: "500",
   },

@@ -22,11 +22,9 @@ const scalePadding = isTablet ? 1.8 : width < 400 ? 1 : 1.4;
 
 const tracePage = [
   { name: "English", icon: "alphabetical", color: "#FF9E3B", screen: "/trace/english/engtrace" },
-  { name: "Urdu", icon: "book-open-page-variant", color: "#6C63FF", screen: "" },
-  { name: "Math", icon: "numeric", color: "#d62828", screen: "" },
-  // { name: "Shapes", icon: "shape", color: "#20A39E", screen: "" },
-  // { name: "Lines", icon: "vector-line", color: "#EF476F", screen: "" },
-  // { name: "Dots", icon: "dots-horizontal", color: "#118AB2", screen: "" },
+    { name: "Fruits", icon: "apple", color: "#d62828", screen: "/trace/drawingcolor/fruits/fruitnames" },
+  // { name: "Urdu", icon: "book-open-page-variant", color: "#6C63FF", screen: "" },
+  // { name: "Math", icon: "numeric", color: "#d62828", screen: "" },
 ];
 
 export default function Trace() {
@@ -61,6 +59,8 @@ export default function Trace() {
         numColumns={isTablet ? 3 : 2}
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContainer}
+                showsVerticalScrollIndicator={false}
+
       />
     </ImageBackground>
   );
@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     marginBottom: 16 * scalePadding,
   },
   traceCard: {

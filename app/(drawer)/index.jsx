@@ -24,19 +24,58 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 const CHECK_INTERVAL_MS = 10 * 60 * 1000;
 
 const learningCategories = [
-  { name: "Alphabet", icon: "alphabetical", color: "#FF9E3B", screen: "/pages/abc" },
-  { name: "Numbers", icon: "numeric", color: "#6C63FF", screen: "/pages/numbers" },
-  { name: "Shapes", icon: "shape-outline", color: "#4CAF50", screen: "/pages/shapes" },
-  { name: "Colors", icon: "palette", color: "#F06292", screen: "/pages/colors" },
+  {
+    name: "Alphabet",
+    icon: "alphabetical",
+    color: "#FF9E3B",
+    screen: "/pages/abc",
+  },
+  {
+    name: "Numbers",
+    icon: "numeric",
+    color: "#6C63FF",
+    screen: "/pages/numbers",
+  },
+  {
+    name: "Shapes",
+    icon: "shape-outline",
+    color: "#4CAF50",
+    screen: "/pages/shapes",
+  },
+  {
+    name: "Colors",
+    icon: "palette",
+    color: "#F06292",
+    screen: "/pages/colors",
+  },
   { name: "Animals", icon: "cat", color: "#9e0059", screen: "/pages/animals" },
-  { name: "Poems", icon: "book-open-page-variant", color: "#FFCA28", screen: "/pages/poems" },
+  {
+    name: "Poems",
+    icon: "book-open-page-variant",
+    color: "#FFCA28",
+    screen: "/pages/poems",
+  },
   { name: "GK", icon: "book", color: "#FF7043", screen: "/pages/gk" },
-  { name: "Islamiyat", icon: "mosque", color: "#42A5F5", screen: "/pages/islamiat" },
-  { name: "Urdu", icon: "book-open-page-variant", color: "#d62828", screen: "/pages/urdu" },
-  { name: "Foods", icon: "food-apple", color: "#00f5d4", screen: "/pages/foods" },
+  {
+    name: "Islamiyat",
+    icon: "mosque",
+    color: "#42A5F5",
+    screen: "/pages/islamiat",
+  },
+  {
+    name: "Urdu",
+    icon: "book-open-page-variant",
+    color: "#d62828",
+    screen: "/pages/urdu",
+  },
+  {
+    name: "Foods",
+    icon: "food-apple",
+    color: "#00f5d4",
+    screen: "/pages/foods",
+  },
   { name: "Test", icon: "draw", color: "#9b5de5", screen: "/pages/test" },
-    { name: "Trace", icon: "draw", color: "#3c096c", screen: "/pages/trace" },
-
+  { name: "Trace", icon: "draw", color: "#3c096c", screen: "/pages/trace" },
 ];
 
 export default function KidsLearningHome() {
@@ -74,7 +113,11 @@ export default function KidsLearningHome() {
       onPress={() => router.push(item.screen)}
       activeOpacity={0.8}
     >
-      <MaterialCommunityIcons name={item.icon} size={60 * scaleFont} color="#FFF" />
+      <MaterialCommunityIcons
+        name={item.icon}
+        size={60 * scaleFont}
+        color="#FFF"
+      />
       <Text style={styles.categoryText}>{item.name}</Text>
     </TouchableOpacity>
   );
@@ -92,6 +135,8 @@ export default function KidsLearningHome() {
         numColumns={numColumns}
         contentContainerStyle={styles.listContent}
         columnWrapperStyle={numColumns > 1 && styles.row}
+                showsVerticalScrollIndicator={false}
+
       />
     </ImageBackground>
   );

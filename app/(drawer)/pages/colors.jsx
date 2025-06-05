@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   FlatList,
   ImageBackground,
-  Dimensions,
+  useWindowDimensions,
 } from 'react-native';
 import * as Speech from 'expo-speech';
 import { Ionicons } from '@expo/vector-icons';
@@ -28,11 +28,15 @@ const COLORS = [
 
 const ColorsScreen = () => {
   const [activeColor, setActiveColor] = useState(null);
-  const screenWidth = Dimensions.get('window').width;
 
-  // Determine number of columns and card width dynamically
-  const numColumns = screenWidth > 768 ? 3 : 2;
-  const cardWidth = (screenWidth - (numColumns + 1) * 20) / numColumns;
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
+  // Adjust columns based on orientation
+  const numColumns = isLandscape ? 4 : 2;
+
+  // Calculate card width dynamically
+  const cardWidth = (width - (numColumns + 1) * 20) / numColumns;
 
   const speakColor = useCallback((color) => {
     setActiveColor(color.name);
@@ -45,7 +49,7 @@ const ColorsScreen = () => {
   }, []);
 
   useEffect(() => {
-    return () => Speech.stop(); // Cleanup
+    return () => Speech.stop();
   }, []);
 
   const renderItem = useCallback(
@@ -81,7 +85,6 @@ const ColorsScreen = () => {
     <ImageBackground
       source={require('../../../assets/images/kidsbg.jpg')}
       style={styles.container}
-      // blurRadius={2}
     >
       <Text style={styles.title}>Color Explorer</Text>
       <Text style={styles.subtitle}>Tap to learn colors!</Text>
@@ -92,6 +95,8 @@ const ColorsScreen = () => {
         keyExtractor={(item) => item.name}
         numColumns={numColumns}
         contentContainerStyle={styles.grid}
+        showsVerticalScrollIndicator={false}
+        key={isLandscape ? 'h' : 'v'} // force re-render on orientation change
       />
     </ImageBackground>
   );

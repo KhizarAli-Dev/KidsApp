@@ -11,11 +11,8 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { LinearGradient } from "expo-linear-gradient";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ImageBackground } from "expo-image";
-
-const { width, height } = Dimensions.get("window");
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -32,7 +29,6 @@ export default function LoginScreen() {
     };
     checkStoredLogin();
   }, []);
-
 
   const handleLogin = async () => {
     if (

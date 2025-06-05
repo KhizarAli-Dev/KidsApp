@@ -80,6 +80,8 @@ const AlphabetSpeechApp = () => {
         keyExtractor={(item) => item.upper}
         numColumns={numColumns}
         contentContainerStyle={styles.grid}
+                showsVerticalScrollIndicator={false}
+
       />
     </ImageBackground>
   );

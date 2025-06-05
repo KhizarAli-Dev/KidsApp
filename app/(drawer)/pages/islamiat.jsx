@@ -1,9 +1,349 @@
+// import {
+//   Text,
+//   StyleSheet,
+//   TouchableOpacity,
+//   FlatList,
+//   View,
+// } from "react-native";
+// import * as Speech from "expo-speech";
+// import { useState, useEffect } from "react";
+// import { Ionicons } from '@expo/vector-icons';
+
+// const kalmas = [
+//   {
+//     title: "پہلا کلمہ (طیب)",
+//     arabic: "لَا إِلٰهَ إِلَّا اللهُ مُحَمَّدٌ رَسُولُ اللهِ",
+//     urdu: "اللہ کے سوا کوئی معبود نہیں، محمد صلی اللہ علیہ وسلم اللہ کے رسول ہیں۔",
+//   },
+//   {
+//     title: "دوسرا کلمہ (شہادت)",
+//     arabic:
+//       "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ",
+//     urdu: "میں گواہی دیتا ہوں کہ اللہ کے سوا کوئی معبود نہیں، اور میں گواہی دیتا ہوں کہ محمد صلی اللہ علیہ وسلم اللہ کے بندے اور رسول ہیں۔",
+//   },
+//   {
+//     title: "تیسرا کلمہ (تمجید)",
+//     arabic:
+//       "سُبْحَانَ اللهِ وَالْحَمْدُ لِلّهِ وَلَا إِلٰهَ إِلَّا اللهُ وَاللهُ أَكْبَرُ",
+//     urdu: "اللہ پاک ہے، تمام تعریف اللہ کے لیے ہے، اللہ کے سوا کوئی معبود نہیں، اور اللہ سب سے بڑا ہے۔",
+//   },
+// ];
+
+// const surahs = [
+//   {
+//     title: "بسم اللہ",
+//     arabic: "بِسْمِ اللَّهِ الرَّحْمَـٰنِ الرَّحِيمِ",
+//     urdu: "اللہ کے نام سے جو نہایت مہربان، رحم والا ہے۔",
+//   },
+//   {
+//     title: "اعوذ باللہ",
+//     arabic: "أَعُوذُ بِاللَّهِ مِنَ الشَّيْطَانِ الرَّجِيمِ",
+//     urdu: "میں پناہ مانگتا ہوں اللہ کی شیطان مردود سے۔",
+//   },
+//   {
+//     title: "سورۃ الفاتحہ",
+//     arabic: `ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ 
+// ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ 
+// مَـٰلِكِ يَوْمِ ٱلدِّينِ 
+// إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ 
+// ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ 
+// صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ 
+// غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ`,
+//     urdu: "تمام تعریفیں اللہ ہی کے لیے ہیں جو تمام جہانوں کا رب ہے...",
+//   },
+//   {
+//     title: "سورۃ الاخلاص",
+//     arabic: `قُلْ هُوَ ٱللَّهُ أَحَدٌ
+// ٱللَّهُ ٱلصَّمَدُ
+// لَمْ يَلِدْ وَلَمْ يُولَدْ
+// وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌ`,
+//     urdu: "کہہ دیجیے! وہ اللہ ایک ہے، اللہ بے نیاز ہے...",
+//   },
+// ];
+
+// const duas = [
+//   {
+//     title: "سونے کی دعا",
+//     arabic: "اللَّهُمَّ بِاسْمِكَ أَمُوتُ وَأَحْيَا",
+//     urdu: "اے اللہ! میں تیرے نام کے ساتھ مرتا ہوں اور جیتا ہوں۔",
+//   },
+//   {
+//     title: "صبح کی دعا",
+//     arabic: "اللّهُـمَّ أَنْتَ رَبِّي لا إِلَهَ إِلّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ",
+//     urdu: "اے اللہ! تو میرا رب ہے، تیرے سوا کوئی معبود نہیں، تو نے مجھے پیدا کیا اور میں تیرا بندہ ہوں۔",
+//   },
+//   {
+//     title: "کھانے کی دعا",
+//     arabic: "اللّهُمَّ بَارِكْ لَنَا فِيمَا رَزَقْتَنَا وَقِنَا عَذَابَ النَّارِ",
+//     urdu: "اے اللہ! جو تو نے ہمیں دیا ہے اس میں برکت دے اور ہمیں دوزخ کے عذاب سے بچا۔",
+//   },
+//   {
+//     title: "نکلنے کی دعا",
+//     arabic: "بِسْمِ اللَّهِ، تَوَكَّلتُ عَلَى اللَّهِ، وَلا حَوْلَ وَلا قُوَّةَ إِلَّا بِاللَّهِ",
+//     urdu: "اللہ کے نام سے (نکلتا ہوں)، میں اللہ پر بھروسہ کرتا ہوں، اور اللہ کے سوا کوئی طاقت اور قوت نہیں۔",
+//   },
+//   {
+//     title: "گھر میں داخل ہونے کی دعا",
+//     arabic: "بِسْمِ اللَّهِ وَلَجْنَا وَبِسْمِ اللَّهِ خَرَجْنَا وَعَلَى اللَّهِ رَبِّنَا تَوَكَّلْنَا",
+//     urdu: "اللہ کے نام سے ہم داخل ہوئے اور اللہ کے نام سے نکلے، اور اپنے رب اللہ پر بھروسہ کیا۔",
+//   },
+// ];
+
+// const Islamiat = () => {
+//   const [activeTab, setActiveTab] = useState("kalmas");
+//   const [isSpeaking, setIsSpeaking] = useState(false);
+
+//   const speak = (arabic, urdu) => {
+//     if (isSpeaking) {
+//       Speech.stop();
+//       setIsSpeaking(false);
+//       return;
+//     }
+    
+//     setIsSpeaking(true);
+//     Speech.stop(); // Stop any ongoing speech before starting a new one
+    
+//     Speech.speak(arabic, {
+//       rate: 0.5,
+//       pitch: 1,
+//       language: "ar-SA",
+//       onDone: () => {
+//         Speech.speak(urdu, {
+//           rate: 0.6,
+//           pitch: 1,
+//           language: "ur-PK",
+//           onDone: () => setIsSpeaking(false),
+//           onStopped: () => setIsSpeaking(false),
+//         });
+//       },
+//       onStopped: () => setIsSpeaking(false),
+//     });
+//   };
+
+//   const stopSpeech = () => {
+//     Speech.stop();
+//     setIsSpeaking(false);
+//   };
+
+//   useEffect(() => {
+//     return () => {
+//       Speech.stop();
+//     };
+//   }, []);
+
+//   const dataToRender =
+//     activeTab === "kalmas" ? kalmas : activeTab === "surahs" ? surahs : duas;
+
+//   const renderItem = ({ item, index }) => (
+//     <View style={[
+//       styles.card,
+//       { backgroundColor: index % 2 === 0 ? "#FFFDE7" : "#E0F7FA" },
+//     ]}>
+//       <TouchableOpacity
+//         onPress={() => speak(item.arabic, item.urdu)}
+//         activeOpacity={0.7}
+//       >
+//         <Text style={styles.title}>{item.title}</Text>
+//         <View style={styles.divider} />
+//         <Text style={styles.arabic}>{item.arabic}</Text>
+//         <Text style={styles.urdu}>{item.urdu}</Text>
+//         <View style={styles.speechButtonContainer}>
+//           <Text style={styles.tapToHear}>
+//             🔊 سننے کے لیے دبائیں
+//           </Text>
+//         </View>
+//       </TouchableOpacity>
+//     </View>
+//   );
+
+//   return (
+//     <View style={{ flex: 1 }}>
+//       <View style={styles.headerContainer}>
+//         <Text style={styles.header}>
+//           📖 اسلامیات –{" "}
+//           {activeTab === "kalmas"
+//             ? "کلمے"
+//             : activeTab === "surahs"
+//             ? "سورتیں"
+//             : "دعائیں"}
+//         </Text>
+//         {isSpeaking && (
+//           <TouchableOpacity onPress={stopSpeech} style={styles.stopButton}>
+//             <Ionicons name="stop-circle" size={24} color="white" />
+//             <Text style={styles.stopButtonText}>Stop</Text>
+//           </TouchableOpacity>
+//         )}
+//       </View>
+
+//       <FlatList
+//         data={dataToRender}
+//         renderItem={renderItem}
+//         keyExtractor={(item, index) => index.toString()}
+//         contentContainerStyle={styles.container}
+//                 showsVerticalScrollIndicator={false}
+
+//       />
+
+//       <View style={styles.bottomNav}>
+//         <TouchableOpacity
+//           onPress={() => {
+//             stopSpeech();
+//             setActiveTab("kalmas");
+//           }}
+//           style={[
+//             styles.navItem,
+//             activeTab === "kalmas" && styles.navItemActive,
+//           ]}
+//         >
+//           <Text style={styles.navText}>کلمے</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           onPress={() => {
+//             stopSpeech();
+//             setActiveTab("surahs");
+//           }}
+//           style={[
+//             styles.navItem,
+//             activeTab === "surahs" && styles.navItemActive,
+//           ]}
+//         >
+//           <Text style={styles.navText}>سورتیں</Text>
+//         </TouchableOpacity>
+//         <TouchableOpacity
+//           onPress={() => {
+//             stopSpeech();
+//             setActiveTab("duas");
+//           }}
+//           style={[
+//             styles.navItem,
+//             activeTab === "duas" && styles.navItemActive,
+//           ]}
+//         >
+//           <Text style={styles.navText}>دعائیں</Text>
+//         </TouchableOpacity>
+//       </View>
+//     </View>
+//   );
+// };
+
+// export default Islamiat;
+
+// const styles = StyleSheet.create({
+//   container: {
+//     backgroundColor: "#FFF8F0",
+//     padding: 16,
+//     paddingBottom: 100,
+//   },
+//   headerContainer: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     backgroundColor: "#FFECB3",
+//     padding: 12,
+//     borderRadius: 12,
+//     marginBottom: 16,
+//   },
+//   header: {
+//     fontSize: 28,
+//     fontWeight: "bold",
+//     color: "#4E342E",
+//   },
+//   stopButton: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     backgroundColor: '#D84315',
+//     paddingVertical: 5,
+//     paddingHorizontal: 10,
+//     borderRadius: 20,
+//   },
+//   stopButtonText: {
+//     color: 'white',
+//     marginLeft: 5,
+//     fontWeight: 'bold',
+//   },
+//   card: {
+//     padding: 20,
+//     borderRadius: 16,
+//     marginBottom: 16,
+//     shadowColor: "#000",
+//     shadowOffset: { width: 1, height: 2 },
+//     shadowOpacity: 0.2,
+//     shadowRadius: 3,
+//     elevation: 3,
+//   },
+//   title: {
+//     fontSize: 20,
+//     fontWeight: "bold",
+//     color: "#3E2723",
+//     marginBottom: 10,
+//   },
+//   divider: {
+//     height: 1,
+//     backgroundColor: "#BDBDBD",
+//     marginBottom: 10,
+//   },
+//   arabic: {
+//     fontSize: 22,
+//     textAlign: "right",
+//     color: "#00796B",
+//     marginBottom: 10,
+//     lineHeight: 30,
+//   },
+//   urdu: {
+//     fontSize: 17,
+//     color: "#444",
+//     textAlign: "right",
+//     lineHeight: 24,
+//     marginBottom: 10,
+//   },
+//   speechButtonContainer: {
+//     flexDirection: 'row',
+//     alignItems: 'center',
+//     justifyContent: 'flex-end',
+//   },
+//   tapToHear: {
+//     fontSize: 14,
+//     textAlign: "right",
+//     fontStyle: "italic",
+//     color: "#D84315",
+//     marginLeft: 5,
+//   },
+//   bottomNav: {
+//     flexDirection: "row",
+//     justifyContent: "space-around",
+//     backgroundColor: "#6C63FF",
+//     paddingVertical: 10,
+//     borderTopWidth: 1,
+//     borderTopColor: "#ccc",
+//     position: "absolute",
+//     bottom: 0,
+//     left: 0,
+//     right: 0,
+//   },
+//   navItem: {
+//     padding: 10,
+//   },
+//   navItemActive: {
+//     borderBottomWidth: 3,
+//     borderBottomColor: "#E0F7FA",
+//   },
+//   navText: {
+//     fontSize: 16,
+//     fontWeight: "600",
+//     color: "white",
+//   },
+// });
+
+
+
+
 import {
   Text,
   StyleSheet,
   TouchableOpacity,
   FlatList,
   View,
+  useWindowDimensions,
 } from "react-native";
 import * as Speech from "expo-speech";
 import { useState, useEffect } from "react";
@@ -93,16 +433,27 @@ const Islamiat = () => {
   const [activeTab, setActiveTab] = useState("kalmas");
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  const { width, height } = useWindowDimensions();
+  const isPortrait = height >= width;
+
+  // Adjust font size and padding based on orientation
+  const fontSizeTitle = isPortrait ? 20 : 24;
+  const fontSizeArabic = isPortrait ? 22 : 26;
+  const fontSizeUrdu = isPortrait ? 17 : 20;
+  const paddingCard = isPortrait ? 20 : 30;
+  const headerFontSize = isPortrait ? 28 : 32;
+  const navPaddingVertical = isPortrait ? 10 : 14;
+
   const speak = (arabic, urdu) => {
     if (isSpeaking) {
       Speech.stop();
       setIsSpeaking(false);
       return;
     }
-    
+
     setIsSpeaking(true);
     Speech.stop(); // Stop any ongoing speech before starting a new one
-    
+
     Speech.speak(arabic, {
       rate: 0.5,
       pitch: 1,
@@ -135,27 +486,20 @@ const Islamiat = () => {
     activeTab === "kalmas" ? kalmas : activeTab === "surahs" ? surahs : duas;
 
   const renderItem = ({ item, index }) => (
-    <View style={[
-      styles.card,
-      { backgroundColor: index % 2 === 0 ? "#FFFDE7" : "#E0F7FA" },
-    ]}>
-      <TouchableOpacity
-        onPress={() => speak(item.arabic, item.urdu)}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.title}>{item.title}</Text>
+    <View
+      style={[
+        styles.card,
+        { backgroundColor: index % 2 === 0 ? "#FFFDE7" : "#E0F7FA" },
+        { padding: paddingCard },
+      ]}
+    >
+      <TouchableOpacity onPress={() => speak(item.arabic, item.urdu)} activeOpacity={0.7}>
+        <Text style={[styles.title, { fontSize: fontSizeTitle }]}>{item.title}</Text>
         <View style={styles.divider} />
-        <Text style={styles.arabic}>{item.arabic}</Text>
-        <Text style={styles.urdu}>{item.urdu}</Text>
+        <Text style={[styles.arabic, { fontSize: fontSizeArabic }]}>{item.arabic}</Text>
+        <Text style={[styles.urdu, { fontSize: fontSizeUrdu }]}>{item.urdu}</Text>
         <View style={styles.speechButtonContainer}>
-          {/* <Ionicons 
-            name={isSpeaking ? "stop-circle" : "play-circle"} 
-            size={24} 
-            color="#D84315" 
-          /> */}
-          <Text style={styles.tapToHear}>
-            🔊 سننے کے لیے دبائیں
-          </Text>
+          <Text style={styles.tapToHear}>🔊 سننے کے لیے دبائیں</Text>
         </View>
       </TouchableOpacity>
     </View>
@@ -163,8 +507,8 @@ const Islamiat = () => {
 
   return (
     <View style={{ flex: 1 }}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>
+      <View style={[styles.headerContainer, { padding: paddingCard / 1.5 }]}>
+        <Text style={[styles.header, { fontSize: headerFontSize }]}>
           📖 اسلامیات –{" "}
           {activeTab === "kalmas"
             ? "کلمے"
@@ -184,19 +528,17 @@ const Islamiat = () => {
         data={dataToRender}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.container}
+        contentContainerStyle={[styles.container, { paddingBottom: paddingCard * 5 }]}
+        showsVerticalScrollIndicator={false}
       />
 
-      <View style={styles.bottomNav}>
+      <View style={[styles.bottomNav, { paddingVertical: navPaddingVertical }]}>
         <TouchableOpacity
           onPress={() => {
             stopSpeech();
             setActiveTab("kalmas");
           }}
-          style={[
-            styles.navItem,
-            activeTab === "kalmas" && styles.navItemActive,
-          ]}
+          style={[styles.navItem, activeTab === "kalmas" && styles.navItemActive]}
         >
           <Text style={styles.navText}>کلمے</Text>
         </TouchableOpacity>
@@ -205,10 +547,7 @@ const Islamiat = () => {
             stopSpeech();
             setActiveTab("surahs");
           }}
-          style={[
-            styles.navItem,
-            activeTab === "surahs" && styles.navItemActive,
-          ]}
+          style={[styles.navItem, activeTab === "surahs" && styles.navItemActive]}
         >
           <Text style={styles.navText}>سورتیں</Text>
         </TouchableOpacity>
@@ -217,10 +556,7 @@ const Islamiat = () => {
             stopSpeech();
             setActiveTab("duas");
           }}
-          style={[
-            styles.navItem,
-            activeTab === "duas" && styles.navItemActive,
-          ]}
+          style={[styles.navItem, activeTab === "duas" && styles.navItemActive]}
         >
           <Text style={styles.navText}>دعائیں</Text>
         </TouchableOpacity>
@@ -235,37 +571,33 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FFF8F0",
     padding: 16,
-    paddingBottom: 100,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     backgroundColor: "#FFECB3",
-    padding: 12,
     borderRadius: 12,
     marginBottom: 16,
   },
   header: {
-    fontSize: 28,
     fontWeight: "bold",
     color: "#4E342E",
   },
   stopButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#D84315',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#D84315",
     paddingVertical: 5,
     paddingHorizontal: 10,
     borderRadius: 20,
   },
   stopButtonText: {
-    color: 'white',
+    color: "white",
     marginLeft: 5,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   card: {
-    padding: 20,
     borderRadius: 16,
     marginBottom: 16,
     shadowColor: "#000",
@@ -275,7 +607,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   title: {
-    fontSize: 20,
     fontWeight: "bold",
     color: "#3E2723",
     marginBottom: 10,
@@ -286,23 +617,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   arabic: {
-    fontSize: 22,
     textAlign: "right",
     color: "#00796B",
     marginBottom: 10,
     lineHeight: 30,
   },
   urdu: {
-    fontSize: 17,
     color: "#444",
     textAlign: "right",
     lineHeight: 24,
     marginBottom: 10,
   },
   speechButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
   },
   tapToHear: {
     fontSize: 14,
@@ -315,7 +644,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     backgroundColor: "#6C63FF",
-    paddingVertical: 10,
     borderTopWidth: 1,
     borderTopColor: "#ccc",
     position: "absolute",
@@ -324,7 +652,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   navItem: {
-    padding: 10,
+    paddingHorizontal: 10,
   },
   navItemActive: {
     borderBottomWidth: 3,
